@@ -19,9 +19,14 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 /* ROUTES */
-const authRouter = require("./routes/authRouter")
-
+const authRouter = require("./routes/authRouter");
+const authenticateJWT = require("./middlewares/jwt");
 app.use("/api/v1/auth", authRouter)
+
+app.get("/test", authenticateJWT, (req, res) => {
+	console.log(req.user)
+	return res.json({ message: "good" })
+})
 
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {

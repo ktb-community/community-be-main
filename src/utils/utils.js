@@ -39,8 +39,24 @@ function csvToStrArray(csvStr) {
 	return csvStr.split("\n").map(row => row.split(","));
 }
 
+// ==============================================================
+const jwt = require('jsonwebtoken')
+const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY
+
+/**
+ * JWT 생성 함수
+ * @param {string} email
+ * @param {string} nickname
+ * @return {string} 
+ */
+function generateToken(email, nickname) {
+	const payload = { email, nickname }
+	return jwt.sign(payload, JWT_SECRET_KEY, {expiresIn: '1h'})
+}
+
 module.exports = {
 	dateFormat,
 	dateTimeFormat,
 	csvToStrArray,
+	generateToken
 };
