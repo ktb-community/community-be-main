@@ -1,6 +1,6 @@
 const bcrypt = require("bcrypt");
 const User = require("../models/user");
-const { generateToken, dateTimeFormat, withTransaction } = require("../utils/utils");
+const { generateToken, dateTimeFormat, withTransaction, checkArguments } = require("../utils/utils");
 const {
 	RequestArgumentException,
 	EmailDuplicationException,
@@ -14,7 +14,7 @@ class AuthService {
 			// TODO: 이메일, 패스워드 형식 검사
 
 			// 1. 요청 값 검증
-			if (!email || !password || !nickname || !profileImg) {
+			if (!checkArguments(email, password, nickname, profileImg)) {
 				throw new RequestArgumentException();
 			}
 
@@ -40,7 +40,7 @@ class AuthService {
 	async login(email, password) {
 		return await withTransaction(async transaction => {
 			// 1. 요청 값 검증
-			if (!email || !password) {
+			if (!checkArguments(email, password)) {
 				throw new RequestArgumentException();
 			}
 
@@ -57,13 +57,9 @@ class AuthService {
 			}
 
 			/* email, password가 일치하는 경우 */
+
+			// 1. DB 업데이트
 			const nickname = existingUser.nickname;
-
-			// 1. JWT 토큰 발급 (access-token, refresh-token)
-			const accessToken = generateToken(email, nickname);
-			const refreshToken = generateToken(email, nickname);
-
-			// 2. DB 업데이트
 			const userId = existingUser.userId;
 			const role = existingUser.role;
 			const profileImg = existingUser.profileImg;
@@ -75,6 +71,10 @@ class AuthService {
 				lastLoginDate,
 			});
 
+			// 2. JWT 토큰 발급 (access-token, refresh-token)
+			const accessToken = generateToken(email, nickname);
+			const refreshToken = generateToken(email, nickname);
+
 			return { role, email, nickname, userId, profileImg, lastLoginDate, accessToken, refreshToken };
 		});
 	}
@@ -82,7 +82,7 @@ class AuthService {
 	async logout(userId, refreshToken) {
 		return await withTransaction(async transaction => {
 			// 1. 요청 값 검증
-			if (!userId || !refreshToken) {
+			if (!checkArguments(userId, refreshToken)) {
 				throw new RequestArgumentException();
 			}
 
