@@ -40,6 +40,13 @@ function csvToStrArray(csvStr) {
 }
 
 /**
+ * 가변 인자를 받아서 null이나 undefined가 있는지 검사
+ */
+function checkArguments(...args) {
+	return args.every(arg => arg !== null && arg !== undefined);
+}
+
+/**
  * JSON 응답
  */
 function sendJSONResponse(res, statusCode, status, message, data = null) {
@@ -86,6 +93,7 @@ module.exports = {
 	dateFormat,
 	dateTimeFormat,
 	csvToStrArray,
+	checkArguments,
 	sendJSONResponse,
 	generateToken,
 	withTransaction,
