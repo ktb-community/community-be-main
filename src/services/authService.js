@@ -1,7 +1,7 @@
 const bcrypt = require("bcrypt");
 const User = require("../models/user");
 const logger = require("../config/logger");
-const { generateToken, dateTimeFormat } = require("../utils/utils");
+const { generateToken, dateTimeFormat, withTransaction } = require("../utils/utils");
 const {
 	RequestArgumentException,
 	EmailDuplicationException,
@@ -15,11 +15,7 @@ class AuthService {
 	}
 
 	async signup(email, password, nickname, profileImg) {
-		const transaction = await this.pool.getConnection();
-
-		try {
-			await transaction.beginTransaction();
-
+		return await withTransaction(async transaction => {
 			// 1. 요청 값 검증
 			if (!email || !password || !nickname || !profileImg) {
 				throw new RequestArgumentException();
@@ -41,23 +37,11 @@ class AuthService {
 				nickname,
 				profileImg: profileImg.filename,
 			});
-
-			await transaction.commit();
-		} catch (err) {
-			logger.error(err);
-			await transaction.rollback();
-			throw err; // 라우터로 예외 전파
-		} finally {
-			transaction.release();
-		}
+		});
 	}
 
 	async login(email, password) {
-		const transaction = await this.pool.getConnection();
-
-		try {
-			await transaction.beginTransaction();
-
+		return await withTransaction(async transaction => {
 			// 1. 요청 값 검증
 			if (!email || !password) {
 				throw new RequestArgumentException();
@@ -94,25 +78,12 @@ class AuthService {
 				lastLoginDate,
 			});
 
-			// 3. 트랜잭션 커밋
-			await transaction.commit();
-
 			return { role, email, nickname, userId, profileImg, lastLoginDate, accessToken, refreshToken };
-		} catch (err) {
-			logger.error(err);
-			await transaction.rollback();
-			throw err; // 라우터로 예외 전파
-		} finally {
-			transaction.release();
-		}
+		});
 	}
 
 	async logout(userId, refreshToken) {
-		const transaction = await this.pool.getConnection();
-
-		try {
-			await transaction.beginTransaction();
-
+		return await withTransaction(async transaction => {
 			// 1. 요청 값 검증
 			if (!userId || !refreshToken) {
 				throw new RequestArgumentException();
@@ -133,14 +104,7 @@ class AuthService {
 
 			// 1. refreshToken 무효화
 			await User.logout(transaction, { userId });
-			await transaction.commit();
-		} catch (err) {
-			logger.error(err);
-			await transaction.rollback();
-			throw err; // 라우터로 예외 전파
-		} finally {
-			transaction.release();
-		}
+		});
 	}
 }
 

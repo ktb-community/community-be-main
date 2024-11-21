@@ -61,10 +61,32 @@ function generateToken(email, nickname) {
 	return jwt.sign(payload, JWT_SECRET_KEY, { expiresIn: "1h" });
 }
 
+// ==============================================================
+const pool = require("../config/db");
+const logger = require("../config/logger");
+
+async function withTransaction(callback) {
+	const transaction = await pool.getConnection();
+
+	try {
+		await transaction.beginTransaction();
+		const result = await callback(transaction);
+		await transaction.commit();
+		return result;
+	} catch (err) {
+		logger.error(err);
+		await transaction.rollback();
+		throw err;
+	} finally {
+		transaction.release();
+	}
+}
+
 module.exports = {
 	dateFormat,
 	dateTimeFormat,
 	csvToStrArray,
 	sendJSONResponse,
 	generateToken,
+	withTransaction,
 };
