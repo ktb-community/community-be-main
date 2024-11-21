@@ -39,24 +39,32 @@ function csvToStrArray(csvStr) {
 	return csvStr.split("\n").map(row => row.split(","));
 }
 
+/**
+ * JSON 응답
+ */
+function sendJSONResponse(res, statusCode, status, message, data = null) {
+	res.status(statusCode).json({ status, message, data });
+}
+
 // ==============================================================
-const jwt = require('jsonwebtoken')
-const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY
+const jwt = require("jsonwebtoken");
+const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
 
 /**
  * JWT 생성 함수
  * @param {string} email
  * @param {string} nickname
- * @return {string} 
+ * @return {string}
  */
 function generateToken(email, nickname) {
-	const payload = { email, nickname }
-	return jwt.sign(payload, JWT_SECRET_KEY, {expiresIn: '1h'})
+	const payload = { email, nickname };
+	return jwt.sign(payload, JWT_SECRET_KEY, { expiresIn: "1h" });
 }
 
 module.exports = {
 	dateFormat,
 	dateTimeFormat,
 	csvToStrArray,
-	generateToken
+	sendJSONResponse,
+	generateToken,
 };

@@ -6,7 +6,7 @@ const format = process.env.NODE_ENV === "production" ? "combined" : "dev";
 
 // 로그 작성을 위한 Output Stream
 const stream = {
-	// 개발환경인 경우 ANSI Escape Codes 제거 
+	// 개발환경인 경우 ANSI Escape Codes 제거
 	write: message => {
 		const cleanMessage =
 			process.env.NODE_ENV === "production"
