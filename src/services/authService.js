@@ -1,6 +1,5 @@
 const bcrypt = require("bcrypt");
 const User = require("../models/user");
-const logger = require("../config/logger");
 const { generateToken, dateTimeFormat, withTransaction } = require("../utils/utils");
 const {
 	RequestArgumentException,
@@ -10,12 +9,10 @@ const {
 } = require("../exception/CustomException");
 
 class AuthService {
-	constructor(pool) {
-		this.pool = pool;
-	}
-
 	async signup(email, password, nickname, profileImg) {
 		return await withTransaction(async transaction => {
+			// TODO: 이메일, 패스워드 형식 검사
+
 			// 1. 요청 값 검증
 			if (!email || !password || !nickname || !profileImg) {
 				throw new RequestArgumentException();

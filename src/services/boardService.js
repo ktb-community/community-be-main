@@ -1,7 +1,3 @@
-class BoardService {
-	constructor(pool) {
-		this.pool = pool;
-	}
-}
+class BoardService {}
 
 module.exports = BoardService;

@@ -42,7 +42,6 @@ app.use(express.static(path.join(process.cwd(), "uploads")));
 
 // ===================================== [라우터 동적으로 등록] ======================================================
 // 애플리케이션 초기화 단계에서 의존성 미리 주입
-const pool = require("./config/db");
 const services = {};
 const serviceDir = path.join(__dirname, "services");
 const routerDir = path.join(__dirname, "routes");
@@ -51,11 +50,10 @@ const routerDir = path.join(__dirname, "routes");
 fs.readdirSync(serviceDir).forEach(file => {
 	const filepath = path.join(serviceDir, file);
 	const filename = path.basename(file, ".js");
-	logger.info(file);
 
 	if (filename.endsWith("Service")) {
 		const ServiceClass = require(filepath);
-		services[filename] = new ServiceClass(pool);
+		services[filename] = new ServiceClass();
 	}
 });
 
@@ -63,7 +61,6 @@ fs.readdirSync(serviceDir).forEach(file => {
 fs.readdirSync(routerDir).forEach(file => {
 	const filepath = path.join(routerDir, file);
 	const filename = path.basename(file, ".js");
-	logger.info(file);
 
 	if (filename.endsWith("Router")) {
 		const RouterClass = require(filepath);
@@ -72,8 +69,9 @@ fs.readdirSync(routerDir).forEach(file => {
 
 		if (service) {
 			const routerInstance = new RouterClass(service);
-			app.use(`/api/v1/${filename.toLowerCase().replace("router", "")}`, routerInstance.router);
-			logger.info(`/api/v1/${filename.toLowerCase().replace("router", "")} 경로 등록`);
+			const routePath = `/api/v1/${filename.toLowerCase().replace("router", "")}`;
+			app.use(routePath, routerInstance.router);
+			logger.info(`${routePath} 경로 등록`);
 		}
 	}
 });
