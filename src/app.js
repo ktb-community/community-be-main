@@ -13,10 +13,15 @@ const morganMiddleware = require("./middlewares/morgan");
 const corsMiddleware = require("./middlewares/cors");
 
 /* MIDDLEWARES */
+app.use(morganMiddleware); 
+app.use(corsMiddleware);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(corsMiddleware);
-//app.use(morganMiddleware);
+
+/* ROUTES */
+const authRouter = require("./routes/authRouter")
+
+app.use("/api/v1/auth", authRouter)
 
 const PORT = process.env.PORT || 8000;
 app.listen(PORT, () => {

@@ -1,6 +1,7 @@
 const winston = require("winston");
 const winstonDaily = require("winston-daily-rotate-file");
 const process = require("process");
+const fs = require("fs");
 
 // 로그 파일 경로 및 형식 설정
 const { combine, timestamp, label, printf } = winston.format;
@@ -8,6 +9,15 @@ const logDir = `${process.cwd()}/logs`;
 const logFormat = printf(({ timestamp, label, level, message }) => {
 	return `[${timestamp}] [${label}] [${level}] | ${message}`;
 });
+
+// logDir 경로 및 하위 경로가 존재하지 않는 경우 생성
+const checkPaths = [logDir, logDir + "/error", logDir + "/http", logDir + "/exception"]
+
+for (const path of checkPaths) {
+	if (!fs.existsSync(path)) {
+		fs.mkdirSync(path)
+	}
+}
 
 /**
  * Log Level
@@ -38,7 +48,7 @@ const logger = winston.createLogger({
 			level: "info",
 			datePattern: "YYYY-MM-DD",
 			dirname: logDir,
-			filename: "$DATE$.log",
+			filename: "%DATE%.log",
 			maxFiles: 30, // 가장 최근 30일치 로그 파일 저장
 			zippedArchive: true, // 아카이브된 로그 파일을 gzip 압축할지 여부
 		}),
@@ -60,6 +70,7 @@ const logger = winston.createLogger({
 			level: "error",
 			datePattern: "YYYY-MM-DD",
 			dirname: logDir + "/exception",
+			filename: '%DATE%.exception.log',
 			maxFiles: 30,
 			zippedArchive: true,
 		}),
@@ -74,8 +85,8 @@ if (process.env.NODE_ENV === "development") {
 		new winston.transports.Console({
 			format: winston.format.combine(
 				winston.format.colorize({ level: true, message: true }),
-				winston.format.simple(),
-				logFormat,
+				winston.format.timestamp({ format: "YYYY-MM-DD" }),
+				winston.format.printf(({ timestamp, level, message}) => `[${timestamp}] [${level}] [${message}]`)
 			),
 		}),
 	);
