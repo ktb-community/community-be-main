@@ -67,6 +67,9 @@ const login = async (req, res) => {
 		// 1. JWT 토큰 발급 (access-token, refresh-token)
 		const accessToken = generateToken(email, nickname);
 		const refreshToken = generateToken(email, nickname);
+
+		// 2. DB 업데이트 
+		await User.login(refreshToken, new Date())
 		
 		return res.status(200).json({ 
 			message: "로그인에 성공하였습니다.",
