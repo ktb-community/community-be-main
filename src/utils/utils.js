@@ -4,7 +4,7 @@
  * @returns {string} 포맷팅된 문자열
  */
 function dateFormat(date) {
-	const year = getFullYear();
+	const year = date.getFullYear();
 	let month = date.getMonth() + 1;
 	let day = date.getDate();
 	month = month >= 10 ? month : "0" + month;

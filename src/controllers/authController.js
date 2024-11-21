@@ -3,9 +3,13 @@ const fs = require("fs");
 const User = require("../models/user");
 const logger = require("../config/logger");
 const pool = require("../config/db");
-const { generateToken, sendJSONResponse } = require("../utils/utils");
+const { generateToken, sendJSONResponse, dateTimeFormat } = require("../utils/utils");
 const { ResStatus } = require("../utils/const");
-const { AuthFieldException, AuthEmailDuplicationException } = require("../exception/AuthException");
+const {
+	AuthFieldException,
+	AuthEmailDuplicationException,
+	InvalidCredentialsException,
+} = require("../exception/AuthException");
 
 const signup = async (req, res) => {
 	const profileImg = req.file;
@@ -18,42 +22,41 @@ const signup = async (req, res) => {
 
 		// 1. 필수 값 확인
 		if (!(email && password && nickname && profileImg)) {
-			throw new AuthFieldException("모든 필드를 입력해주세요.", 400);
+			throw new AuthFieldException();
 		}
 
 		// 2. 이메일 중복 확인
 		const existingUser = await User.findByEmail(connection, { email });
 		if (existingUser) {
-			throw new AuthEmailDuplicationException("이미 사용중인 이메일입니다.", 400);
+			throw new AuthEmailDuplicationException();
 		}
 
 		// 3. 비밀번호 해싱
 		const hashedPassword = await bcrypt.hash(password, 10);
 
 		// 4. 사용자 생성
-		const newUser = await User.create(connection, {
+		await User.create(connection, {
 			email,
 			password: hashedPassword,
 			nickname,
 			profileImg: profileImg.path,
 		});
 
-		// 트랜잭션 커밋
+		// 트랜잭션 커밋 & 201 반환
 		await connection.commit();
-
-		// 5. 성공 응답
-		const data = { userId: newUser.insertId };
-		sendJSONResponse(res, 201, ResStatus.SUCCESS, "회원가입이 성공적으로 완료되었습니다.", data);
+		sendJSONResponse(res, 201, ResStatus.SUCCESS, "회원가입이 성공적으로 완료되었습니다.");
 	} catch (err) {
 		// 트랜잭션 롤백, 로깅, 에러 반환
 		await connection.rollback();
-		logger.error(err);
 
 		if (err instanceof AuthFieldException) {
+			logger.error(err.message);
 			sendJSONResponse(res, err.statusCode, ResStatus.FAIL, err.message);
 		} else if (err instanceof AuthEmailDuplicationException) {
+			logger.error(err.message);
 			sendJSONResponse(res, err.statusCode, ResStatus.FAIL, err.message);
 		} else {
+			logger.error(err);
 			sendJSONResponse(res, 500, ResStatus.ERROR, "예상치못한 에러가 발생했습니다.");
 		}
 
@@ -78,19 +81,19 @@ const login = async (req, res) => {
 
 		// 요청 값 검증
 		if (!email || !password) {
-			return res.status(400).json({ message: "모든 필드를 포함해야합니다." });
+			throw AuthFieldException();
 		}
 
 		// 1. email 확인
-		const existingUser = User.findByEmail(email);
+		const existingUser = await User.findByEmail(connection, { email });
 		if (!existingUser) {
-			return res.status(400).json({ message: "가입되지 않은 이메일입니다." });
+			throw InvalidCredentialsException("가입되지 않은 이메일입니다.");
 		}
 
 		// 2. password 일치 확인
 		const passwordMatch = await bcrypt.compare(password, existingUser.password);
 		if (!passwordMatch) {
-			return res.status(400).json({ message: "비밀번호가 일치하지 않습니다." });
+			throw InvalidCredentialsException("비밀번호가 일치하지 않습니다.");
 		}
 
 		/* email, password가 일치하는 경우 */
@@ -101,18 +104,33 @@ const login = async (req, res) => {
 		const refreshToken = generateToken(email, nickname);
 
 		// 2. DB 업데이트
-		User.login(refreshToken, new Date());
+		const userId = existingUser.userId;
+		const profileImg = existingUser.profileImg;
+		const lastLoginDate = dateTimeFormat(new Date(Date.now()));
+
+		await User.login(connection, {
+			userId,
+			refreshToken,
+			lastLoginDate,
+		});
 		await connection.commit();
 
-		return res.status(200).json({
-			message: "로그인에 성공하였습니다.",
-			accessToken,
-			refreshToken,
-		});
+		// 3. 정상 응답
+		const data = { email, nickname, userId, profileImg, lastLoginDate, accessToken, refreshToken };
+		sendJSONResponse(res, 200, ResStatus.SUCCESS, "로그인에 성공하였습니다.", data);
 	} catch (err) {
 		await connection.rollback();
-		logger.error(err);
-		return res.status(500).json({ message: "서버 오류가 발생하였습니다." });
+
+		if (err instanceof AuthFieldException) {
+			logger.error(err.message);
+			sendJSONResponse(res, err.statusCode, ResStatus.FAIL, err.message);
+		} else if (err instanceof InvalidCredentialsException) {
+			logger.error(err.message);
+			sendJSONResponse(res, err.statusCode, ResStatus.FAIL, err.message);
+		} else {
+			logger.error(err);
+			sendJSONResponse(res, 500, ResStatus.ERROR, "예상치못한 에러가 발생했습니다.");
+		}
 	} finally {
 		connection.release();
 	}

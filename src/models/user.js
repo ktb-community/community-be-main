@@ -39,7 +39,7 @@ const User = {
 	/**
 	 * 이메일로 사용자 검색
 	 * @param {PoolConnection} connection
-	 * @param {string} email
+	 * @param {object} UserEmail email
 	 * @return {Promise<object|null>} 찾은 사용자 정보 또는 NULL
 	 */
 	findByEmail: async (connection, { email }) => {
@@ -50,17 +50,16 @@ const User = {
 
 	/**
 	 * 사용자 로그인
-	 * @param {number} id 유저 기본키
-	 * @param {string} refreshToken 매 로그인마다 리프레시 토큰 초기화
-	 * @param {Date} lastLoginDate 로그인 일자 업데이트
+	 * @param {PoolConnection} connection
+	 * @param {object} UserLogin userId, refreshToken, lastLoginDate
 	 */
-	login: async (connection, { id, refreshToken, lastLoginDate }) => {
+	login: async (connection, { userId, refreshToken, lastLoginDate }) => {
 		const query = `
-            UPDATE MEMBER
-            SET lastLoginDate = ? and refreshToken = ?
-            WHERE id = ?
+            UPDATE USERS
+            SET lastLoginDate = ?, refreshToken = ?
+            WHERE userId = ?
         `;
-		await connection.execute(query, [lastLoginDate, refreshToken, id]);
+		await connection.execute(query, [lastLoginDate, refreshToken, userId]);
 	},
 };
 
