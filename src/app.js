@@ -35,7 +35,7 @@ app.use(morganMiddleware);
 app.use(corsMiddleware);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(process.cwd(), "public")));
+app.use(express.static(path.join(process.cwd(), "uploads")));
 
 /* ROUTES */
 const authRouter = require("./routes/authRouter");

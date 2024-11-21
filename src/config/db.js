@@ -13,8 +13,7 @@ const pool = mysql.createPool({
 	queueLimit: 0,
 });
 
-const db = pool.promise();
-
 // Promise 기반 사용을 위한 `promise()` 호출
+const db = pool.promise();
 
 module.exports = db;

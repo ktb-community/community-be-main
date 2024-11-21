@@ -6,10 +6,11 @@ const pool = require("../config/db");
 const { generateToken, sendJSONResponse, dateTimeFormat } = require("../utils/utils");
 const { ResStatus } = require("../utils/const");
 const {
-	AuthFieldException,
-	AuthEmailDuplicationException,
+	RequestArgumentException,
+	EmailDuplicationException,
 	InvalidCredentialsException,
-} = require("../exception/AuthException");
+	UserNotFoundException,
+} = require("../exception/CustomException");
 
 const signup = async (req, res) => {
 	const profileImg = req.file;
@@ -22,13 +23,13 @@ const signup = async (req, res) => {
 
 		// 1. 필수 값 확인
 		if (!(email && password && nickname && profileImg)) {
-			throw new AuthFieldException();
+			throw new RequestArgumentException();
 		}
 
 		// 2. 이메일 중복 확인
 		const existingUser = await User.findByEmail(connection, { email });
 		if (existingUser) {
-			throw new AuthEmailDuplicationException();
+			throw new EmailDuplicationException();
 		}
 
 		// 3. 비밀번호 해싱
@@ -39,7 +40,7 @@ const signup = async (req, res) => {
 			email,
 			password: hashedPassword,
 			nickname,
-			profileImg: profileImg.path,
+			profileImg: profileImg.filename,
 		});
 
 		// 트랜잭션 커밋 & 201 반환
@@ -49,10 +50,10 @@ const signup = async (req, res) => {
 		// 트랜잭션 롤백, 로깅, 에러 반환
 		await connection.rollback();
 
-		if (err instanceof AuthFieldException) {
+		if (err instanceof RequestArgumentException) {
 			logger.error(err.message);
 			sendJSONResponse(res, err.statusCode, ResStatus.FAIL, err.message);
-		} else if (err instanceof AuthEmailDuplicationException) {
+		} else if (err instanceof EmailDuplicationException) {
 			logger.error(err.message);
 			sendJSONResponse(res, err.statusCode, ResStatus.FAIL, err.message);
 		} else {
@@ -81,19 +82,19 @@ const login = async (req, res) => {
 
 		// 요청 값 검증
 		if (!email || !password) {
-			throw AuthFieldException();
+			throw new RequestArgumentException();
 		}
 
 		// 1. email 확인
 		const existingUser = await User.findByEmail(connection, { email });
 		if (!existingUser) {
-			throw InvalidCredentialsException("가입되지 않은 이메일입니다.");
+			throw new InvalidCredentialsException("가입되지 않은 이메일입니다.");
 		}
 
 		// 2. password 일치 확인
 		const passwordMatch = await bcrypt.compare(password, existingUser.password);
 		if (!passwordMatch) {
-			throw InvalidCredentialsException("비밀번호가 일치하지 않습니다.");
+			throw new InvalidCredentialsException("비밀번호가 일치하지 않습니다.");
 		}
 
 		/* email, password가 일치하는 경우 */
@@ -105,6 +106,7 @@ const login = async (req, res) => {
 
 		// 2. DB 업데이트
 		const userId = existingUser.userId;
+		const role = existingUser.role;
 		const profileImg = existingUser.profileImg;
 		const lastLoginDate = dateTimeFormat(new Date(Date.now()));
 
@@ -116,12 +118,12 @@ const login = async (req, res) => {
 		await connection.commit();
 
 		// 3. 정상 응답
-		const data = { email, nickname, userId, profileImg, lastLoginDate, accessToken, refreshToken };
+		const data = { role, email, nickname, userId, profileImg, lastLoginDate, accessToken, refreshToken };
 		sendJSONResponse(res, 200, ResStatus.SUCCESS, "로그인에 성공하였습니다.", data);
 	} catch (err) {
 		await connection.rollback();
 
-		if (err instanceof AuthFieldException) {
+		if (err instanceof RequestArgumentException) {
 			logger.error(err.message);
 			sendJSONResponse(res, err.statusCode, ResStatus.FAIL, err.message);
 		} else if (err instanceof InvalidCredentialsException) {
@@ -136,7 +138,55 @@ const login = async (req, res) => {
 	}
 };
 
+const logout = async (req, res) => {
+	const { userId, refreshToken } = req.body;
+	const connection = await pool.getConnection();
+
+	try {
+		// 트랜잭션 시작
+		await connection.beginTransaction();
+
+		// 요청값 검증
+		if (!userId || !refreshToken) {
+			throw new RequestArgumentException();
+		}
+
+		// 1. 유저 찾아오기
+		const user = await User.findById(connection, { userId });
+		if (!user) {
+			throw new UserNotFoundException();
+		}
+
+		// 2. refreshToken 값 확인
+		if (refreshToken !== user.refreshToken) {
+			throw new InvalidCredentialsException();
+		}
+
+		// 2. refreshToken 무효화 후 정상 응답
+		await User.logout(connection, { userId });
+		await connection.commit();
+
+		sendJSONResponse(res, 200, ResStatus.SUCCESS, "로그아웃이 성공적으로 완료되었습니다.");
+	} catch (err) {
+		await connection.rollback();
+
+		if (err instanceof RequestArgumentException) {
+			logger.error(err.message);
+			sendJSONResponse(res, err.statusCode, ResStatus.FAIL, err.message);
+		} else if (err instanceof UserNotFoundException) {
+			logger.error(err.message);
+			sendJSONResponse(res, err.statusCode, ResStatus.FAIL, err.message);
+		} else {
+			logger.error(err);
+			sendJSONResponse(res, 500, ResStatus.ERROR, "예상치못한 에러가 발생했습니다.");
+		}
+	} finally {
+		connection.release();
+	}
+};
+
 module.exports = {
 	signup,
 	login,
+	logout,
 };
