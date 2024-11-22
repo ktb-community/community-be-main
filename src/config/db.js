@@ -1,5 +1,6 @@
 const mysql = require("mysql2");
 const process = require("process");
+const logger = require("./logger");
 
 // MySQL 연결 풀 생성
 const pool = mysql.createPool({
@@ -15,5 +16,16 @@ const pool = mysql.createPool({
 
 // Promise 기반 사용을 위한 `promise()` 호출
 const db = pool.promise();
+
+// 초기 연결 테스트
+db.getConnection()
+	.then(conn => {
+		logger.info("Connected to DB");
+		conn.release();
+	})
+	.catch(err => {
+		logger.error("Connection Error: ", err);
+		process.exit(1);
+	})
 
 module.exports = db;

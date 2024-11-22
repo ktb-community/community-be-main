@@ -10,7 +10,7 @@ const process = require("process");
 const dotenv = require("dotenv");
 dotenv.config({ path: `${process.cwd()}/src/config/.env` });
 process.env.NODE_ENV =
-	process.env.NODE_ENV && process.env.NODE_ENV.trim().toLowerCase() == "production" ? "production" : "development";
+	process.env.NODE_ENV && process.env.NODE_ENV.trim().toLowerCase() === "production" ? "production" : "development";
 
 /* uploads 경로 확인 */
 const uploadDir = `${process.cwd()}/uploads`;
@@ -71,21 +71,26 @@ fs.readdirSync(routerDir).forEach(file => {
 			const routerInstance = new RouterClass(service);
 			const routePath = `/api/v1/${filename.toLowerCase().replace("router", "")}`;
 			app.use(routePath, routerInstance.router);
-			logger.info(`${routePath} 경로 등록`);
+			logger.info(`${routePath}에 ${serviceKey} 주입`);
 		}
 	}
 });
 // =====================================================================================================================
 
 // ========================================= [500 에러 핸들링] ==========================================================
-// 500번대 에러만 전역적으로 처리
+// 전역 예외 처리
 const { sendJSONResponse } = require("./utils/utils");
 const { ResStatus } = require("./utils/const");
 
-app.use((err, req, res, next) => {
-	logger.error(err.stack);
-	sendJSONResponse(res, 500, ResStatus.ERROR, "서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
-});
+const globalExceptionHandler = () => {
+	return function (err, req, res, next) {
+		logger.error(err.stack);
+		sendJSONResponse(res, 500, ResStatus.ERROR, "서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+		return next()
+	}
+}
+
+app.use(globalExceptionHandler())
 // =====================================================================================================================
 
 const PORT = process.env.PORT || 8000;

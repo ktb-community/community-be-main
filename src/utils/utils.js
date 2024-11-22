@@ -61,16 +61,16 @@ const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
  * JWT 생성 함수
  * @param {string} email
  * @param {string} nickname
+ * @param {string} role
  * @return {string}
  */
-function generateToken(email, nickname) {
-	const payload = { email, nickname };
+function generateToken(email, nickname, role) {
+	const payload = { email, nickname, role };
 	return jwt.sign(payload, JWT_SECRET_KEY, { expiresIn: "1h" });
 }
 
 // ==============================================================
 const pool = require("../config/db");
-const logger = require("../config/logger");
 
 async function withTransaction(callback) {
 	const transaction = await pool.getConnection();
@@ -81,7 +81,6 @@ async function withTransaction(callback) {
 		await transaction.commit();
 		return result;
 	} catch (err) {
-		logger.error(err);
 		await transaction.rollback();
 		throw err;
 	} finally {
