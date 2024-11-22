@@ -4,6 +4,12 @@ const ResStatus = Object.freeze({
 	ERROR: "Error",
 });
 
+const UserRole = Object.freeze({
+	ADMIN: "ADMIN",
+	USER: "USER"
+})
+
 module.exports = {
 	ResStatus,
+	UserRole
 };

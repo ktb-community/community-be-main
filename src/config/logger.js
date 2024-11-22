@@ -73,6 +73,7 @@ const logger = winston.createLogger({
 if (process.env.NODE_ENV === "development") {
 	logger.add(
 		new winston.transports.Console({
+			level: "debug",
 			format: winston.format.combine(
 				winston.format.colorize({ level: true, message: true }),
 				winston.format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),

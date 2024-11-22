@@ -8,9 +8,9 @@ class RequestArgumentException extends Error {
 	}
 }
 
-// 이메일이 중복된 경우 발생
-class EmailDuplicationException extends Error {
-	constructor(message = "이미 사용중인 이메일입니다.", statusCode = 400) {
+// 유니크 컬럼에 중복된 값이 생성될 때 발생 (이메일, 닉네임)
+class DuplicationException extends Error {
+	constructor(message = "이미 사용중인 값입니다.", statusCode = 400) {
 		super(message);
 		this.statusCode = statusCode;
 	}
@@ -42,7 +42,7 @@ class DatabaseConnectionException extends Error {
 
 module.exports = {
 	RequestArgumentException,
-	EmailDuplicationException,
+	DuplicationException,
 	InvalidCredentialsException,
 	UserNotFoundException,
 	DatabaseConnectionException,

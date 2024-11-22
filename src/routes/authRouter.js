@@ -1,12 +1,11 @@
 const express = require("express");
 const fs = require("fs");
-const authenticateJWT = require("../middlewares/jwt");
 const upload = require("../middlewares/multer");
 const logger = require("../config/logger");
 const { ResStatus } = require("../utils/const");
 const { sendJSONResponse } = require("../utils/utils");
 const {
-	EmailDuplicationException,
+	DuplicationException,
 	RequestArgumentException,
 	InvalidCredentialsException,
 	UserNotFoundException,
@@ -22,7 +21,7 @@ class AuthRouter {
 	#initializeRoutes() {
 		this.router.post("/signup", upload.single("profileImg"), this.#signup.bind(this));
 		this.router.post("/login", this.#login.bind(this));
-		this.router.post("/logout", authenticateJWT, this.#logout.bind(this));
+		this.router.post("/logout", this.#logout.bind(this));
 	}
 
 	async #signup(req, res) {
@@ -34,7 +33,7 @@ class AuthRouter {
 			sendJSONResponse(res, 201, ResStatus.SUCCESS, "회원가입이 성공적으로 완료되었습니다.");
 		} catch (err) {
 			/* 커스텀 예외 처리 (500번 에러는 전역에서 처리) */
-			if (err instanceof RequestArgumentException || err instanceof EmailDuplicationException) {
+			if (err instanceof RequestArgumentException || err instanceof DuplicationException) {
 				logger.error(err.message);
 				sendJSONResponse(res, err.statusCode, ResStatus.FAIL, err.message);
 			}
