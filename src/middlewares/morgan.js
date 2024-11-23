@@ -1,5 +1,6 @@
 const morgan = require("morgan");
 const logger = require("../config/logger");
+const process = require("process")
 
 // NODE_ENV에 따라 morgan 옵션 세팅
 const format = process.env.NODE_ENV === "production" ? "combined" : "dev";

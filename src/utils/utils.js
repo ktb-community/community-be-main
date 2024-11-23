@@ -40,6 +40,19 @@ function csvToStrArray(csvStr) {
 }
 
 /**
+ * 10진수를 간략한 표현으로 변환
+ * @param {number} num 10진수
+ * @returns {string} 변환된 문자열 형식의 수
+ * @description 1,000 이상 -> 1K, 10,000 이상 -> 10K, 100,000 이상 -> 100K
+ */
+function changeNumberExpression(num) {
+	if (num >= 1_000_000_000) return `${(num / 1_000_000_000).toFixed(1).replace(/\.0$/, '')}B`
+	else if (num >= 1_000_000) return `${(num / 1_000_000).toFixed(1).replace(/\.0$/, '')}M`
+	else if (num >= 1_000) return `${(num / 1_000).toFixed(1).replace(/\.0$/, '')}K`
+	return num.toString()
+}
+
+/**
  * 가변 인자를 받아서 null이나 undefined가 있는지 검사
  */
 function checkArguments(...args) {
@@ -49,12 +62,13 @@ function checkArguments(...args) {
 /**
  * JSON 응답
  */
-function sendJSONResponse(res, statusCode, status, message, data = null) {
-	res.status(statusCode).json({ status, message, data });
+function sendJSONResponse(res, statusCode, status, message, data = null, options) {
+	return res.status(statusCode).json({ status, message, data, ...options });
 }
 
 // ==============================================================
 const jwt = require("jsonwebtoken");
+const process = require("process")
 const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
 
 /**
@@ -92,6 +106,7 @@ module.exports = {
 	dateFormat,
 	dateTimeFormat,
 	csvToStrArray,
+	changeNumberExpression,
 	checkArguments,
 	sendJSONResponse,
 	generateToken,
