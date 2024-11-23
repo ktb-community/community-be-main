@@ -30,19 +30,22 @@ class AuthRouter {
 
 		try {
 			await this.authService.signup(email, password, nickname, profileImg);
-			sendJSONResponse(res, 201, ResStatus.SUCCESS, "회원가입이 성공적으로 완료되었습니다.");
+			return sendJSONResponse(res, 201, ResStatus.SUCCESS, "회원가입이 성공적으로 완료되었습니다.");
 		} catch (err) {
-			/* 커스텀 예외 처리 (500번 에러는 전역에서 처리) */
-			if (err instanceof RequestArgumentException || err instanceof DuplicationException) {
-				logger.error(err.message);
-				sendJSONResponse(res, err.statusCode, ResStatus.FAIL, err.message);
-			}
-
 			/* 업로드된 파일 삭제 */
 			if (fs.existsSync(profileImg.path)) {
 				fs.rmSync(profileImg.path);
 				logger.info(`[signup] 이미지 삭제: ${profileImg.path}`);
 			}
+
+			/* 커스텀 예외 처리 (500번 에러는 전역에서 처리) */
+			if (err instanceof RequestArgumentException || err instanceof DuplicationException) {
+				logger.error(err.message);
+				return sendJSONResponse(res, err.statusCode, ResStatus.FAIL, err.message);
+			}
+
+			// 기타 에러
+			throw err;
 		}
 	}
 
@@ -51,13 +54,15 @@ class AuthRouter {
 
 		try {
 			const data = await this.authService.login(email, password);
-			sendJSONResponse(res, 200, ResStatus.SUCCESS, "로그인에 성공하였습니다.", data);
+			return sendJSONResponse(res, 200, ResStatus.SUCCESS, "로그인에 성공하였습니다.", data);
 		} catch (err) {
 			/* 커스텀 예외 처리 (500번 에러는 전역에서 처리) */
 			if (err instanceof RequestArgumentException || err instanceof InvalidCredentialsException) {
 				logger.error(err.message);
-				sendJSONResponse(res, err.statusCode, ResStatus.FAIL, err.message);
+				return sendJSONResponse(res, err.statusCode, ResStatus.FAIL, err.message);
 			}
+
+			throw err;
 		}
 	}
 
@@ -66,13 +71,15 @@ class AuthRouter {
 
 		try {
 			await this.authService.logout(userId, refreshToken);
-			sendJSONResponse(res, 200, ResStatus.SUCCESS, "로그아웃이 성공적으로 완료되었습니다.");
+			return sendJSONResponse(res, 200, ResStatus.SUCCESS, "로그아웃이 성공적으로 완료되었습니다.");
 		} catch (err) {
 			/* 커스텀 예외 처리 (500번 에러는 전역에서 처리) */
 			if (err instanceof RequestArgumentException || err instanceof UserNotFoundException) {
 				logger.error(err.message);
-				sendJSONResponse(res, err.statusCode, ResStatus.FAIL, err.message);
+				return sendJSONResponse(res, err.statusCode, ResStatus.FAIL, err.message);
 			}
+
+			throw err;
 		}
 	}
 }
