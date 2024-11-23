@@ -1,14 +1,39 @@
 const express = require("express");
 const path = require("path");
 const fs = require("fs");
-const app = express();
-const logger = require("./config/logger");
-
-// ========================================= [초기화 단계] ===========================================================
-/* 환경변수 로드, NODE_ENV 정의 -> 앱 상단에서 최초 1회만 수행 */
+const helmet = require("helmet")
+const rateLimit = require("express-rate-limit");
 const process = require("process");
 const dotenv = require("dotenv");
 dotenv.config({ path: `${process.cwd()}/src/config/.env` });
+const logger = require("./config/logger");
+
+const app = express();
+
+// CSP & 요청 최대 제한
+app.use(helmet({
+	contentSecurityPolicy: {
+		useDefaults: true,
+		directives: {
+			"img-src": ["'self'", process.env.SERVER_URL],
+			"script-src": ["'self'", process.env.SERVER_URL]
+		}
+	},
+	frameguard: {
+		action: 'deny'
+	},
+	xssFilter: true,
+	noCache: true,
+}));
+
+app.use(rateLimit({
+	windowMs: 60 * 1000,
+	max: 100,
+	message: "최대 요청에 도달했습니다. 1분 뒤 다시 시도해주세요."
+}));
+
+// ========================================= [초기화 단계] ===========================================================
+/* 환경변수 로드, NODE_ENV 정의 -> 앱 상단에서 최초 1회만 수행 */
 process.env.NODE_ENV =
 	process.env.NODE_ENV && process.env.NODE_ENV.trim().toLowerCase() === "production" ? "production" : "development";
 
