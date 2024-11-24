@@ -1,5 +1,4 @@
 const express = require("express");
-const path = require("path");
 const fs = require("fs");
 const helmet = require("helmet")
 const rateLimit = require("express-rate-limit");
@@ -23,7 +22,6 @@ app.use(helmet({
 		action: 'deny'
 	},
 	xssFilter: true,
-	noCache: true,
 }));
 
 app.use(rateLimit({
@@ -63,43 +61,52 @@ app.use(morganMiddleware);
 app.use(corsMiddleware);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static(path.join(process.cwd(), "uploads")));
+app.use("/uploads", (req, res, next) => {
+	res.setHeader("Access-Control-Allow-Origin", 'http://localhost:5173');
+	res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
+	next();
+}, express.static("uploads"));
 
-// ===================================== [라우터 동적으로 등록] ======================================================
-// 애플리케이션 초기화 단계에서 의존성 미리 주입
-const services = {};
-const serviceDir = path.join(__dirname, "services");
-const routerDir = path.join(__dirname, "routes");
+// ===================================== [라우터 등록] ======================================================
+// 애플리케이션 초기화 단계에서 의존성 주입 -> TODO: 추후 DI 프레임워크 도입 또는 fs 모듈로 자동화시키기
+/* Model */
+const User = require("./models/user");
+const Board = require("./models/board");
+const BoardLike = require("./models/boardLike");
+const BoardComment = require("./models/boardComment");
 
-// 서비스 인스턴스 동적으로 등록
-fs.readdirSync(serviceDir).forEach(file => {
-	const filepath = path.join(serviceDir, file);
-	const filename = path.basename(file, ".js");
+const userModel = new User();
+const boardModel = new Board();
+const boardLikeModel = new BoardLike();
+const boardCommentModel = new BoardComment();
 
-	if (filename.endsWith("Service")) {
-		const ServiceClass = require(filepath);
-		services[filename] = new ServiceClass();
-	}
-});
+/* Service */
+const UserService = require("./services/userService");
+const BoardService = require("./services/boardService");
+const AuthService = require("./services/authService");
+const BoardCommentService = require("./services/boardCommentService");
+const BoardLikeService = require("./services/boardLikeService");
 
-// 라우터 동적 로딩
-fs.readdirSync(routerDir).forEach(file => {
-	const filepath = path.join(routerDir, file);
-	const filename = path.basename(file, ".js");
+const userService = new UserService(userModel);
+const authService = new AuthService(userModel);
+const boardService = new BoardService(boardModel);
+const boardCommentService = new BoardCommentService(boardCommentModel);
+const boardLikeService = new BoardLikeService(boardLikeModel);
 
-	if (filename.endsWith("Router")) {
-		const RouterClass = require(filepath);
-		const serviceKey = filename.replace("Router", "Service");
-		const service = services[serviceKey];
+/* Router */
+const UserRouter = require("./routes/userRouter");
+const AuthRouter = require("./routes/authRouter");
+const BoardRouter = require("./routes/boardRouter");
 
-		if (service) {
-			const routerInstance = new RouterClass(service);
-			const routePath = `/api/v1/${filename.toLowerCase().replace("router", "")}`;
-			app.use(routePath, routerInstance.router);
-			logger.info(`${routePath}에 ${serviceKey} 주입`);
-		}
-	}
-});
+const userRouter = new UserRouter(userService);
+const authRouter = new AuthRouter(authService);
+const boardRouter = new BoardRouter(boardService, boardLikeService, boardCommentService);
+
+/* 라우터 등록 */
+const REQUEST_PATH = process.env.REQUEST_PATH;
+app.use(`${REQUEST_PATH}/users`, userRouter.router);
+app.use(`${REQUEST_PATH}/auth`, authRouter.router);
+app.use(`${REQUEST_PATH}/boards`, boardRouter.router);
 // =====================================================================================================================
 
 // ========================================= [500 에러 핸들링] ==========================================================

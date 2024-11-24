@@ -131,6 +131,60 @@ class User {
 			throw new DatabaseConnectionException();
 		}
 	}
+
+	/**
+	 * 사용자 닉네임 변경
+	 */
+	async patchNickname(connection, { userId, nickname }) {
+		const query = `
+			UPDATE USERS
+			SET USERS.nickname = ?
+			WHERE id = ?
+		`;
+
+		try {
+			await connection.execute(query, [nickname, userId]);
+		} catch (err) {
+			logger.error(err);
+			throw new DatabaseConnectionException();
+		}
+	}
+
+	/**
+	 * 사용자 비밀번호 변경
+	 */
+	async patchPassword(connection, { userId, password }) {
+		const query = `
+			UPDATE USERS
+			SET USERS.password = ?
+			WHERE id = ?
+		`;
+
+		try {
+			await connection.execute(query, [password, userId]);
+		} catch (err) {
+			logger.error(err);
+			throw new DatabaseConnectionException();
+		}
+	}
+
+	/**
+	 * 사용자 토큰 변경
+	 */
+	async patchRefreshToken(connection, { userId, refreshToken }) {
+		const query = `
+			UPDATE USERS
+			SET USERS.refreshToken = ?
+			WHERE id = ?
+		`;
+
+		try {
+			await connection.execute(query, [refreshToken, userId]);
+		} catch (err) {
+			logger.error(err);
+			throw err;
+		}
+	}
 }
 
 module.exports = User;

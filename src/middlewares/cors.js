@@ -1,4 +1,5 @@
 const cors = require("cors");
+const process = require("process");
 const { csvToStrArray } = require("../utils/utils");
 
 const corsOptions = {

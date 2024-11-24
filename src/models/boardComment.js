@@ -1,0 +1,17 @@
+/*
+[Schema]
+CREATE TABLE IF NOT EXISTS BOARD_COMMENT (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    boardId INT NOT NULL,
+    writerId INT,
+    FOREIGN KEY (boardId) REFERENCES BOARD(id) ON DELETE CASCADE,
+    FOREIGN KEY (writerId) REFERENCES USERS(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+ */
+
+class BoardComment {
+
+}
+
+module.exports = BoardComment;

@@ -1,10 +1,12 @@
-const Board = require("../models/board")
 const { withTransaction, checkArguments, dateTimeFormat, changeNumberExpression } = require("../utils/utils");
 const { RequestArgumentException } = require("../exception/CustomException");
 
 class BoardService {
-	constructor() {
-		this.boardModel = new Board();
+	/**
+	 * @param {Board} boardModel
+	 */
+	constructor(boardModel) {
+		this.boardModel = boardModel;
 	}
 
 	async getLatestBoardList(limit, offset) {

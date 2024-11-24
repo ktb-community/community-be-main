@@ -3,18 +3,25 @@ const logger = require("../config/logger")
 const { sendJSONResponse } = require("../utils/utils");
 const { ResStatus } = require("../utils/const");
 const { RequestArgumentException } = require("../exception/CustomException");
+const authenticateJWT = require("../middlewares/jwt");
 
 class BoardRouter {
-	constructor(boardService) {
+	constructor(boardService, boardLikeService, boardCommentService) {
 		this.router = express.Router();
 		this.boardService = boardService;
+		this.boardLikeService = boardLikeService;
+		this.boardCommentService = boardCommentService;
 		this.#initializeRoutes();
 	}
 
 	#initializeRoutes() {
-		this.router.get("/", this.#getLatestBoardList.bind(this))
-		this.router.get("/:boardId", this.#getBoardDetail.bind(this))
-		this.router.get("/comments/:boardId", this.#getBoardComments.bind(this))
+		this.router.get("/", this.#getLatestBoardList.bind(this));
+		this.router.get("/:boardId", authenticateJWT, this.#getBoardDetail.bind(this));
+		this.router.put("/:boardId", authenticateJWT, this.#modifyBoardDetail.bind(this));
+		this.router.delete("/:boardId", authenticateJWT, this.#deleteBoardDetail.bind(this));
+		this.router.get("/comments/:boardId", authenticateJWT, this.#getBoardComments.bind(this));
+		this.router.put("/comments/:boardId", authenticateJWT, this.#modifyBoardComments.bind(this));
+		this.router.delete("/comments/:boardId", authenticateJWT, this.#deleteBoardComments.bind(this));
 	}
 
 	async #getLatestBoardList(req, res) {
@@ -64,6 +71,22 @@ class BoardRouter {
 
 			throw err;
 		}
+	}
+
+	async #modifyBoardDetail(req, res) {
+
+	}
+
+	async #deleteBoardDetail(req, res) {
+
+	}
+
+	async #modifyBoardComments(req, res) {
+
+	}
+
+	async #deleteBoardComments(req, res) {
+
 	}
 }
 
