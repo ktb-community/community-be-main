@@ -94,6 +94,35 @@ class Board {
 			throw new DatabaseConnectionException();
 		}
 	}
+
+	async addBoard(connection, { title, content, boardImg, writerId }) {
+		const query = `
+			INSERT INTO BOARD(title, content, boardImg, writerId)
+			VALUES (?, ?, ?, ?)
+		`;
+
+		try {
+			await connection.execute(query, [title, content, boardImg, writerId]);
+		} catch (err) {
+			logger.error(err);
+			throw err;
+		}
+	}
+
+	async addBoardView(connection, { boardId }) {
+		const query = `
+			UPDATE BOARD
+			SET views = views + 1
+			WHERE id = ?
+		`;
+
+		try {
+			await connection.execute(query, [boardId]);
+		} catch (err) {
+			logger.error(err);
+			throw err;
+		}
+	}
 }
 
 module.exports = Board;

@@ -9,6 +9,7 @@ const logger = require("./config/logger");
 
 const app = express();
 
+
 // CSP & 요청 최대 제한
 app.use(helmet({
 	contentSecurityPolicy: {
@@ -89,7 +90,7 @@ const BoardLikeService = require("./services/boardLikeService");
 
 const userService = new UserService(userModel);
 const authService = new AuthService(userModel);
-const boardService = new BoardService(boardModel);
+const boardService = new BoardService(boardModel, userModel);
 const boardCommentService = new BoardCommentService(boardCommentModel);
 const boardLikeService = new BoardLikeService(boardLikeModel);
 

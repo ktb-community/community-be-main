@@ -72,6 +72,18 @@ function checkPassword(password) {
 }
 
 /**
+ * 태그 문자 대체
+ */
+function escapeXSS(str) {
+	const replaced = ['<script>', '<script/>', '<img', 'href="javascript:"']
+	for (let i = 0 ; i < replaced.length; i++) {
+		str.replace(replaced[i], "");
+	}
+
+	return str;
+}
+
+/**
  * JSON 응답
  */
 function sendJSONResponse(res, statusCode, status, message, data = null, options) {
@@ -126,6 +138,7 @@ module.exports = {
 	changeNumberExpression,
 	checkArguments,
 	checkPassword,
+	escapeXSS,
 	sendJSONResponse,
 	generateToken,
 	verifyToken,
