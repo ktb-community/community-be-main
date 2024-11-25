@@ -82,7 +82,7 @@ class AuthService {
 			const lastLoginDate = dateTimeFormat(new Date(Date.now()));
 
 			// 2. JWT 토큰 발급 (access-token, refresh-token)
-			const payload = { email, nickname, role };
+			const payload = { email, nickname, role, userId };
 			const accessToken = generateToken(payload, ACCESS_TOKEN_SECRET_KEY, JWTExpire.ACCESS_TOKEN);
 			const refreshToken = generateToken(payload, REFRESH_TOKEN_SECRET_KEY, JWTExpire.REFRESH_TOKEN);
 
@@ -92,7 +92,7 @@ class AuthService {
 				lastLoginDate,
 			});
 
-			return { email, nickname, userId, profileImg, lastLoginDate, accessToken, refreshToken };
+			return { email, nickname, userId, profileImg, lastLoginDate, accessToken, refreshToken, role };
 		});
 	}
 
@@ -147,7 +147,7 @@ class AuthService {
 			}
 
 			// 2. 토큰 발급
-			const payload = { email: user.email, nickname: user.nickname, role: user.role };
+			const payload = { email: user.email, nickname: user.nickname, role: user.role, userId: user.id };
 			const newAccessToken = generateToken(payload, ACCESS_TOKEN_SECRET_KEY, JWTExpire.ACCESS_TOKEN);
 			const newRefreshToken = generateToken(payload, REFRESH_TOKEN_SECRET_KEY, JWTExpire.REFRESH_TOKEN);
 

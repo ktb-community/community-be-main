@@ -1,6 +1,7 @@
+const process = require("process");
 const { withTransaction, checkArguments, dateTimeFormat, changeNumberExpression } = require("../utils/utils");
 const { RequestArgumentException, UserNotFoundException } = require("../exception/CustomException");
-const process = require("process");
+const { UserRole } = require("../utils/const");
 
 class BoardService {
 	/**
@@ -49,17 +50,6 @@ class BoardService {
 		})
 	}
 
-	async getBoardComments(boardId, offset, limit) {
-		return await withTransaction(async transaction => {
-			// 1. 요청값 검증
-			if (!checkArguments(boardId, offset, limit)) {
-				throw new RequestArgumentException();
-			}
-
-			const boardComments = await this.boardModel.getBoardComments(transaction, { boardId, limit, offset });
-			return boardComments.map(comment => ({ ...comment, createdAt: dateTimeFormat(new Date(comment.createdAt))}))
-		})
-	}
 
 	async addBoard(boardTitle, boardContent, boardImg, claims) {
 		return await withTransaction(async transaction => {
@@ -87,14 +77,63 @@ class BoardService {
 		})
 	}
 
-	async addBoardView(boardId) {
+	async modifyBoard(boardInfo, claims) {
+		return await withTransaction(async transaction => {
+			const { boardId, boardTitle, boardContent, boardImg } = boardInfo;
+
+			// 1. 요청값 검증
+			if (!checkArguments(boardId, boardTitle, boardContent, boardImg, claims)) {
+				throw new RequestArgumentException();
+			}
+
+			// 2. 사용자 검증
+			const { userId, role } = claims;
+			const board = await this.boardModel.findById(transaction, { boardId })
+			if (!board) {
+				throw new RequestArgumentException();
+			}
+
+			if (role !== UserRole.ADMIN && board.writerId !== userId) {
+				throw new RequestArgumentException();
+			}
+
+			// 3. 수정 요청
+			await this.boardModel.updateBoard(transaction, { boardId, boardTitle, boardContent, boardImg: `${process.env.SERVER_URL}/uploads/${boardImg.filename}` });
+		})
+	}
+
+	async deleteBoard(boardId, claims) {
+		return await withTransaction(async transaction => {
+			// 1. 요청값 검증
+			if (!checkArguments(boardId, claims)) {
+				throw new RequestArgumentException();
+			}
+
+			const { role, userId } = claims;
+
+			// 2. 작성자 검증
+			const board = await this.boardModel.findById(transaction, { boardId });
+			if (!board) {
+				throw new RequestArgumentException("잘못된 게시글 번호입니다.");
+			}
+
+			if (role !== UserRole.ADMIN && board.writerId !== userId) {
+				throw new RequestArgumentException("작성한 게시글만 삭제할 수 있습니다.")
+			}
+
+			// 3. 게시글 삭제
+			await this.boardModel.deleteById(transaction, { boardId })
+		})
+	}
+
+	async countBoardView(boardId) {
 		return await withTransaction(async transaction => {
 			// 1. 요청값 검증
 			if (!checkArguments(boardId)) {
 				throw new RequestArgumentException();
 			}
 
-			await this.boardModel.addBoardView(transaction, { boardId });
+			await this.boardModel.countBoardView(transaction, { boardId });
 		})
 	}
 }
