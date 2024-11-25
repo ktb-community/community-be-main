@@ -17,6 +17,44 @@ const logger = require("../config/logger");
 const { DatabaseConnectionException } = require("../exception/CustomException");
 
 class Board {
+	async findById(connection, { boardId }) {
+		const query = `SELECT * FROM BOARD WHERE id = ?`;
+
+		try {
+			const [rows] = await connection.query(query, [boardId]);
+			return rows[0] || null;
+		} catch (err) {
+			logger.error(err);
+			throw new DatabaseConnectionException();
+		}
+	}
+
+	async deleteById(connection, { boardId }) {
+		const query = `DELETE FROM BOARD WHERE id = ?`;
+
+		try {
+			await connection.query(query, [boardId]);
+		} catch (err) {
+			logger.error(err);
+			throw new DatabaseConnectionException();
+		}
+	}
+
+	async updateBoard(connection, { boardId, boardTitle, boardContent, boardImg }) {
+		const query = `
+			UPDATE BOARD
+			SET title = ?, content = ?, boardImg = ?
+			WHERE id = ?
+		`;
+
+		try {
+			await connection.execute(query, [boardTitle, boardContent, boardImg, boardId]);
+		} catch (err) {
+			logger.error(err);
+			throw new DatabaseConnectionException();
+		}
+	}
+
 	async getLatestBoardList(connection, { limit, offset }) {
 		const query = `
 			SELECT
@@ -52,6 +90,7 @@ class Board {
 				B.boardImg,
 				B.content,
 				B.views,
+				B.writerId,
 				U.nickname,
 				U.profileImg,
 				(SELECT COUNT(*) FROM BOARD_LIKE BL WHERE BL.boardId = B.id) AS likeCnt,
@@ -65,30 +104,6 @@ class Board {
 		try {
 			const [result] = await connection.execute(query, [boardId]);
 			return result;
-		} catch (err) {
-			logger.error(err);
-			throw new DatabaseConnectionException();
-		}
-	}
-
-	async getBoardComments(connection, { boardId, limit, offset }) {
-		const query = `
-			SELECT
-				U.nickname,
-				U.profileImg,
-				BC.comment,
-				BC.createdAt
-			FROM BOARD_COMMENT BC
-			INNER JOIN USERS U
-			ON BC.writerId = U.id
-			WHERE BC.boardId = ?
-			ORDER BY BC.createdAt DESC
-			LIMIT ? OFFSET ?;
-		`;
-
-		try {
-			const [result] = await connection.execute(query, [boardId, limit, offset]);
-			return result
 		} catch (err) {
 			logger.error(err);
 			throw new DatabaseConnectionException();
@@ -109,7 +124,7 @@ class Board {
 		}
 	}
 
-	async addBoardView(connection, { boardId }) {
+	async countBoardView(connection, { boardId }) {
 		const query = `
 			UPDATE BOARD
 			SET views = views + 1

@@ -9,7 +9,6 @@ const logger = require("./config/logger");
 
 const app = express();
 
-
 // CSP & 요청 최대 제한
 app.use(helmet({
 	contentSecurityPolicy: {
@@ -27,7 +26,7 @@ app.use(helmet({
 
 app.use(rateLimit({
 	windowMs: 60 * 1000,
-	max: 100,
+	max: 1000,
 	message: "최대 요청에 도달했습니다. 1분 뒤 다시 시도해주세요."
 }));
 
@@ -118,8 +117,7 @@ const { ResStatus } = require("./utils/const");
 const globalExceptionHandler = () => {
 	return function (err, req, res, next) {
 		logger.error(err.stack);
-		sendJSONResponse(res, 500, ResStatus.ERROR, "서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
-		return next()
+		return sendJSONResponse(res, 500, ResStatus.ERROR, "서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
 	}
 }
 
