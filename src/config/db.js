@@ -20,7 +20,7 @@ const db = pool.promise();
 // 초기 연결 테스트
 db.getConnection()
 	.then(conn => {
-		logger.info("Connected to DB");
+		logger.info(`Successfully Connected to DB: ${process.env.DB_NAME}@${process.env.DB_HOST}:${process.env.DB_PORT} with ${process.env.DB_USER}`);
 		conn.release();
 	})
 	.catch(err => {

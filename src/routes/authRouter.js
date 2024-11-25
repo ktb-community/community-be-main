@@ -22,6 +22,7 @@ class AuthRouter {
 		this.router.post("/signup", upload.single("profileImg"), this.#signup.bind(this));
 		this.router.post("/login", this.#login.bind(this));
 		this.router.post("/logout", this.#logout.bind(this));
+		this.router.post("/refresh", this.#refresh.bind(this));
 	}
 
 	async #signup(req, res) {
@@ -74,7 +75,23 @@ class AuthRouter {
 			return sendJSONResponse(res, 200, ResStatus.SUCCESS, "로그아웃이 성공적으로 완료되었습니다.");
 		} catch (err) {
 			/* 커스텀 예외 처리 (500번 에러는 전역에서 처리) */
-			if (err instanceof RequestArgumentException || err instanceof UserNotFoundException) {
+			if (err instanceof RequestArgumentException || err instanceof UserNotFoundException || err instanceof InvalidCredentialsException) {
+				logger.error(err.message);
+				return sendJSONResponse(res, err.statusCode, ResStatus.FAIL, err.message);
+			}
+
+			throw err;
+		}
+	}
+
+	async #refresh(req, res) {
+		const { userId, refreshToken } = req.body;
+
+		try {
+			const tokens = await this.authService.refresh(userId, refreshToken);
+			return sendJSONResponse(res, 200, ResStatus.SUCCESS, "토큰이 성공적으로 재발행되었습니다.", tokens);
+		} catch (err) {
+			if (err instanceof RequestArgumentException || err instanceof InvalidCredentialsException) {
 				logger.error(err.message);
 				return sendJSONResponse(res, err.statusCode, ResStatus.FAIL, err.message);
 			}

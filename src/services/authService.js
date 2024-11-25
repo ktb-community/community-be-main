@@ -1,7 +1,7 @@
 const bcrypt = require("bcrypt");
 const process = require("process");
-const User = require("../models/user");
-const { generateToken, dateTimeFormat, withTransaction, checkArguments } = require("../utils/utils");
+const { JWTExpire } = require("../utils/const");
+const { generateToken, dateTimeFormat, withTransaction, checkArguments, checkPassword, verifyToken } = require("../utils/utils");
 const {
 	RequestArgumentException,
 	DuplicationException,
@@ -9,9 +9,15 @@ const {
 	UserNotFoundException,
 } = require("../exception/CustomException");
 
+const ACCESS_TOKEN_SECRET_KEY = process.env.ACCESS_TOKEN_SECRET_KEY;
+const REFRESH_TOKEN_SECRET_KEY = process.env.REFRESH_TOKEN_SECRET_KEY;
+
 class AuthService {
-	constructor() {
-		this.userModel = new User();
+	/**
+	 * @param {User} userModel
+	 */
+	constructor(userModel) {
+		this.userModel = userModel;
 	}
 
 	async signup(email, password, nickname, profileImg) {
@@ -22,17 +28,7 @@ class AuthService {
 			}
 
 			// 2. 이메일 & 패스워드 형식 검사
-			if (
-				!(
-					/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email) &&
-					password.length >= 8 &&
-					password.length <= 20 &&
-					/[A-Z]/.test(password) &&
-					/[a-z]/.test(password) &&
-					/[0-9]/.test(password) &&
-					/[!@#$%^&*]/.test(password)
-				)
-			) {
+			if (!checkPassword(password) || !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email)) {
 				throw new RequestArgumentException("이메일 및 패스워드 형식이 맞지 않습니다.");
 			}
 
@@ -86,8 +82,9 @@ class AuthService {
 			const lastLoginDate = dateTimeFormat(new Date(Date.now()));
 
 			// 2. JWT 토큰 발급 (access-token, refresh-token)
-			const accessToken = generateToken(email, nickname, role);
-			const refreshToken = generateToken(email, nickname, role);
+			const payload = { email, nickname, role };
+			const accessToken = generateToken(payload, ACCESS_TOKEN_SECRET_KEY, JWTExpire.ACCESS_TOKEN);
+			const refreshToken = generateToken(payload, REFRESH_TOKEN_SECRET_KEY, JWTExpire.REFRESH_TOKEN);
 
 			await this.userModel.login(transaction, {
 				userId,
@@ -95,7 +92,7 @@ class AuthService {
 				lastLoginDate,
 			});
 
-			return { role, email, nickname, userId, profileImg, lastLoginDate, accessToken, refreshToken };
+			return { email, nickname, userId, profileImg, lastLoginDate, accessToken, refreshToken };
 		});
 	}
 
@@ -120,6 +117,45 @@ class AuthService {
 			// refreshToken 무효화
 			return await this.userModel.logout(transaction, { userId });
 		});
+	}
+
+	async refresh(userId, refreshToken) {
+		return await withTransaction(async transaction => {
+			// 1. 요청값 검증
+			if (!checkArguments(userId, refreshToken)) {
+				throw new RequestArgumentException();
+			}
+
+			// 2. 리프레시 토큰 검증
+			try {
+				await verifyToken(refreshToken, REFRESH_TOKEN_SECRET_KEY);
+			}
+			catch (err) {
+				console.error(err);
+				throw new RequestArgumentException("리프레시 토큰을 검증할 수 없습니다.");
+			}
+
+			// 3. 유저 찾아오기
+			const user = await this.userModel.findById(transaction, { userId });
+			if (!user) {
+				throw new InvalidCredentialsException("토큰 정보를 확인할 수 없습니다.");
+			}
+
+			// 4. DB랑 토큰 일치 여부 확인
+			if (user.refreshToken !== refreshToken) {
+				throw new InvalidCredentialsException("리프레시 토큰 정보가 다릅니다.");
+			}
+
+			// 2. 토큰 발급
+			const payload = { email: user.email, nickname: user.nickname, role: user.role };
+			const newAccessToken = generateToken(payload, ACCESS_TOKEN_SECRET_KEY, JWTExpire.ACCESS_TOKEN);
+			const newRefreshToken = generateToken(payload, REFRESH_TOKEN_SECRET_KEY, JWTExpire.REFRESH_TOKEN);
+
+			// 3. DB 업데이트
+			await this.userModel.patchRefreshToken(transaction, { userId, refreshToken: newRefreshToken });
+
+			return { accessToken: newAccessToken, refreshToken: newRefreshToken };
+		})
 	}
 }
 

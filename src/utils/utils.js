@@ -36,7 +36,7 @@ function dateTimeFormat(date) {
  * @returns {string[]} ','로 구분된 문자열 배열
  */
 function csvToStrArray(csvStr) {
-	return csvStr.split("\n").map(row => row.split(","));
+	return csvStr.split(",")
 }
 
 /**
@@ -60,6 +60,30 @@ function checkArguments(...args) {
 }
 
 /**
+ * 비밀번호 형식 검사
+ */
+function checkPassword(password) {
+	return password.length >= 8 &&
+		password.length <= 20 &&
+		/[A-Z]/.test(password) &&
+		/[a-z]/.test(password) &&
+		/[0-9]/.test(password) &&
+		/[!@#$%^&*]/.test(password)
+}
+
+/**
+ * 태그 문자 대체
+ */
+function escapeXSS(str) {
+	const replaced = ['<script>', '<script/>', '<img', 'href="javascript:"']
+	for (let i = 0 ; i < replaced.length; i++) {
+		str.replace(replaced[i], "");
+	}
+
+	return str;
+}
+
+/**
  * JSON 응답
  */
 function sendJSONResponse(res, statusCode, status, message, data = null, options) {
@@ -68,19 +92,24 @@ function sendJSONResponse(res, statusCode, status, message, data = null, options
 
 // ==============================================================
 const jwt = require("jsonwebtoken");
-const process = require("process")
-const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
+const { promisify } = require("util");
 
 /**
  * JWT 생성 함수
- * @param {string} email
- * @param {string} nickname
- * @param {string} role
+ * @param {object} payload email, nickname, role
+ * @param {string} secretKey
+ * @param {number} expiresIn - jsonwebtoken 라이브러리에서 허용하는 expire 형식 (timespan string or second number)
  * @return {string}
  */
-function generateToken(email, nickname, role) {
-	const payload = { email, nickname, role };
-	return jwt.sign(payload, JWT_SECRET_KEY, { expiresIn: "1h" });
+function generateToken(payload, secretKey, expiresIn) {
+	return jwt.sign(payload, secretKey, { expiresIn });
+}
+
+/**
+ * 토큰 검증 함수
+ */
+function verifyToken(token, secretKey) {
+	return promisify(jwt.verify)(token, secretKey);
 }
 
 // ==============================================================
@@ -108,7 +137,10 @@ module.exports = {
 	csvToStrArray,
 	changeNumberExpression,
 	checkArguments,
+	checkPassword,
+	escapeXSS,
 	sendJSONResponse,
 	generateToken,
+	verifyToken,
 	withTransaction,
 };

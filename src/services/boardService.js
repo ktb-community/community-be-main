@@ -1,10 +1,15 @@
-const Board = require("../models/board")
 const { withTransaction, checkArguments, dateTimeFormat, changeNumberExpression } = require("../utils/utils");
-const { RequestArgumentException } = require("../exception/CustomException");
+const { RequestArgumentException, UserNotFoundException } = require("../exception/CustomException");
+const process = require("process");
 
 class BoardService {
-	constructor() {
-		this.boardModel = new Board();
+	/**
+	 * @param {Board} boardModel
+	 * @param {User} userModel
+	 */
+	constructor(boardModel, userModel) {
+		this.boardModel = boardModel;
+		this.userModel = userModel;
 	}
 
 	async getLatestBoardList(limit, offset) {
@@ -53,6 +58,43 @@ class BoardService {
 
 			const boardComments = await this.boardModel.getBoardComments(transaction, { boardId, limit, offset });
 			return boardComments.map(comment => ({ ...comment, createdAt: dateTimeFormat(new Date(comment.createdAt))}))
+		})
+	}
+
+	async addBoard(boardTitle, boardContent, boardImg, claims) {
+		return await withTransaction(async transaction => {
+			// 1. 요청값 검증
+			if (!checkArguments(boardTitle, boardContent, boardImg, claims)) {
+				throw new RequestArgumentException();
+			}
+
+			// 2. 작성자 찾아오기
+			const { email } = claims;
+			const user = await this.userModel.findByEmail(transaction, { email });
+			if (!user) {
+				throw new UserNotFoundException();
+			}
+
+			// 3. 게시글 추가
+			const board = {
+				title: boardTitle,
+				content: boardContent,
+				boardImg: `${process.env.SERVER_URL}/uploads/${boardImg.filename}`,
+				writerId: user.id
+			}
+
+			await this.boardModel.addBoard(transaction, board)
+		})
+	}
+
+	async addBoardView(boardId) {
+		return await withTransaction(async transaction => {
+			// 1. 요청값 검증
+			if (!checkArguments(boardId)) {
+				throw new RequestArgumentException();
+			}
+
+			await this.boardModel.addBoardView(transaction, { boardId });
 		})
 	}
 }

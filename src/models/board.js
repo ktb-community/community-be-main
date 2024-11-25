@@ -11,31 +11,12 @@ CREATE TABLE IF NOT EXISTS BOARD (
     writerId INT NOT NULL,
     FOREIGN KEY (writerId) REFERENCES USERS(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-CREATE TABLE IF NOT EXISTS BOARD_LIKE (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    boardId INT NOT NULL,
-    likerId INT NOT NULL,
-    createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (boardId) REFERENCES BOARD(id) ON DELETE CASCADE,
-    FOREIGN KEY (likerId) REFERENCES USERS(id) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-CREATE TABLE IF NOT EXISTS BOARD_COMMENT (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    createdAt DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    boardId INT NOT NULL,
-    writerId INT,
-    FOREIGN KEY (boardId) REFERENCES BOARD(id) ON DELETE CASCADE,
-    FOREIGN KEY (writerId) REFERENCES USERS(id) ON DELETE SET NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 */
 
 const logger = require("../config/logger");
 const { DatabaseConnectionException } = require("../exception/CustomException");
 
 class Board {
-
 	async getLatestBoardList(connection, { limit, offset }) {
 		const query = `
 			SELECT
@@ -111,6 +92,35 @@ class Board {
 		} catch (err) {
 			logger.error(err);
 			throw new DatabaseConnectionException();
+		}
+	}
+
+	async addBoard(connection, { title, content, boardImg, writerId }) {
+		const query = `
+			INSERT INTO BOARD(title, content, boardImg, writerId)
+			VALUES (?, ?, ?, ?)
+		`;
+
+		try {
+			await connection.execute(query, [title, content, boardImg, writerId]);
+		} catch (err) {
+			logger.error(err);
+			throw err;
+		}
+	}
+
+	async addBoardView(connection, { boardId }) {
+		const query = `
+			UPDATE BOARD
+			SET views = views + 1
+			WHERE id = ?
+		`;
+
+		try {
+			await connection.execute(query, [boardId]);
+		} catch (err) {
+			logger.error(err);
+			throw err;
 		}
 	}
 }
