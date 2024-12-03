@@ -1,0 +1,32 @@
+{
+  "data": [
+    {
+      "id": 1,
+      "comment": "zzqwewqeqweqwezzzz",
+      "writerId": 1,
+      "boardId": 1,
+      "createdAt": "2024/12/01 12:30:33"
+    },
+    {
+      "id": 2,
+      "comment": "zzzzzqweqez",
+      "writerId": 1,
+      "boardId": 1,
+      "createdAt": "2024/12/01 12:30:33"
+    },
+    {
+      "id": 3,
+      "comment": "zzzzzqwxeqwz",
+      "writerId": 1,
+      "boardId": 1,
+      "createdAt": "2024/12/01 12:30:33"
+    },
+    {
+      "id": 4,
+      "comment": "zzzzzeqwexz",
+      "writerId": 1,
+      "boardId": 1,
+      "createdAt": "2024/12/01 12:30:33"
+    }
+  ]
+}

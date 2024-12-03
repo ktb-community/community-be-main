@@ -1,36 +1,25 @@
 const fs = require("fs");
-const logger = require("../../config/logger");
 const USER_JSON = `./src/v1/json/users.json`;
-
-async function getUsers() {
-	try {
-		const json = JSON.parse(fs.readFileSync(USER_JSON, "utf-8"));
-		return json.data;
-	} catch (e) {
-		logger.error(e.stack);
-		return null;
-	}
-}
-
-const findByEmail = async email => {
-	const users = await getUsers();
-	return users.find(user => user.email === email);
-};
-
-const findByNickname = async nickname => {
-	const users = await getUsers();
-	return users.find(user => user.nickname === nickname);
-};
-
-const saveUser = async user => {
-	const users = await getUsers();
-	const newUsers = [...users, { id: users.length + 1, ...user }];
-	const json = { data: newUsers };
-	fs.writeFileSync(USER_JSON, JSON.stringify(json, null, 2), "utf8");
-};
+const userJson = JSON.parse(fs.readFileSync(USER_JSON, "utf-8"));
+const USERS = userJson.data;
 
 module.exports = {
-	findByEmail,
-	findByNickname,
-	saveUser
-};
+	findById: userId => {
+		return USERS.find(user => user.id === userId) || null;
+	},
+
+	findByEmail: email => {
+		return USERS.find(user => user.email === email) || null;
+	},
+
+	findByNickname: nickname => {
+		return USERS.find(user => user.nickname === nickname) || null;
+	},
+
+	save: user => {
+		const newUser = { id: USERS.length + 1, ...user };
+		const json = { data: [...USERS, newUser] };
+		fs.writeFileSync(USER_JSON, JSON.stringify(json, null, 2), "utf8");
+		USERS.append(newUser);
+	}
+}

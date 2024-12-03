@@ -48,7 +48,7 @@ const authSignup = async (req, res) => {
 		lastLoginDate: null,
 	}
 
-	await User.saveUser(user)
+	await User.save(user)
 	return sendJSONResponse(res, 201, ResStatus.SUCCESS, "회원가입이 성공적으로 완료되었습니다.");
 }
 
