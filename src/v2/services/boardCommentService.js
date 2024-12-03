@@ -1,6 +1,6 @@
-const { withTransaction, checkArguments, escapeXSS, dateTimeFormat } = require("../utils/utils");
-const { RequestArgumentException } = require("../exception/CustomException");
-const { UserRole } = require("../utils/const");
+const { withTransaction, checkArguments, escapeXSS, dateTimeFormat } = require("../../utils/utils");
+const { RequestArgumentException } = require("../../exception/CustomException");
+const { UserRole } = require("../../utils/const");
 
 class BoardCommentService {
 	/**

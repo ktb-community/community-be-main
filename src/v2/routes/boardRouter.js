@@ -1,10 +1,10 @@
 const express = require("express");
-const logger = require("../config/logger");
-const { sendJSONResponse } = require("../utils/utils");
-const { ResStatus } = require("../utils/const");
-const { RequestArgumentException, UserNotFoundException } = require("../exception/CustomException");
-const authenticateJWT = require("../middlewares/jwt");
-const upload = require("../middlewares/multer");
+const logger = require("../../config/logger");
+const { sendJSONResponse } = require("../../utils/utils");
+const { ResStatus } = require("../../utils/const");
+const { RequestArgumentException, UserNotFoundException } = require("../../exception/CustomException");
+const authenticateJWT = require("../../middlewares/jwt");
+const upload = require("../../middlewares/multer");
 
 class BoardRouter {
 	constructor(boardService, boardLikeService, boardCommentService) {

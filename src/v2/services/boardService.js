@@ -1,7 +1,7 @@
 const process = require("process");
-const { withTransaction, checkArguments, dateTimeFormat, changeNumberExpression } = require("../utils/utils");
-const { RequestArgumentException, UserNotFoundException } = require("../exception/CustomException");
-const { UserRole } = require("../utils/const");
+const { withTransaction, checkArguments, dateTimeFormat, changeNumberExpression } = require("../../utils/utils");
+const { RequestArgumentException, UserNotFoundException } = require("../../exception/CustomException");
+const { UserRole } = require("../../utils/const");
 
 class BoardService {
 	/**

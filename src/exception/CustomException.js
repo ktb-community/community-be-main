@@ -1,6 +1,9 @@
+
 /* 커스텀 예외 클래스 모음 */
 
 // 요청 필수값이 누락된 경우 발생
+const { ResStatus } = require("../utils/const");
+
 class RequestArgumentException extends Error {
 	constructor(message = "모든 필드를 입력해주세요.", statusCode = 400) {
 		super(message);
@@ -26,9 +29,10 @@ class InvalidCredentialsException extends Error {
 
 // 유저를 찾을 수 없을 때 발생 (이메일이나, id로 찾은 경우)
 class UserNotFoundException extends Error {
-	constructor(message = "유저를 찾을 수 없습니다.", statusCode = 400) {
+	constructor(message = "유저를 찾을 수 없습니다.", statusCode = 400, status = ResStatus.FAIL) {
 		super(message);
 		this.statusCode = statusCode;
+		this.status = status;
 	}
 }
 
