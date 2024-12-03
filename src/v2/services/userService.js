@@ -1,5 +1,5 @@
-const { checkArguments, withTransaction, checkPassword } = require("../utils/utils");
-const { RequestArgumentException } = require("../exception/CustomException");
+const { checkArguments, withTransaction, checkPassword } = require("../../utils/utils");
+const { RequestArgumentException } = require("../../exception/CustomException");
 const bcrypt = require("bcrypt");
 
 class UserService {

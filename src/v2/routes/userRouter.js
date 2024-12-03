@@ -1,9 +1,9 @@
 const express = require("express");
-const logger = require("../config/logger")
-const { sendJSONResponse } = require("../utils/utils");
-const { ResStatus } = require("../utils/const");
-const { RequestArgumentException, InvalidCredentialsException } = require("../exception/CustomException");
-const authenticateJWT = require("../middlewares/jwt");
+const logger = require("../../config/logger")
+const { sendJSONResponse } = require("../../utils/utils");
+const { ResStatus } = require("../../utils/const");
+const { RequestArgumentException, InvalidCredentialsException } = require("../../exception/CustomException");
+const authenticateJWT = require("../../middlewares/jwt");
 
 class UserRouter {
 	constructor(userService) {

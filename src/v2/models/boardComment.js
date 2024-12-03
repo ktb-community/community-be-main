@@ -11,8 +11,8 @@ CREATE TABLE IF NOT EXISTS BOARD_COMMENT (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
  */
 
-const logger = require("../config/logger")
-const { DatabaseConnectionException } = require("../exception/CustomException");
+const logger = require("../../config/logger")
+const { DatabaseConnectionException } = require("../../exception/CustomException");
 
 class BoardComment {
 	async findById(connection, { commentId }) {

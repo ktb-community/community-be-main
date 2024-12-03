@@ -13,8 +13,8 @@ CREATE TABLE IF NOT EXISTS USERS (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 */
 
-const logger = require("../config/logger");
-const { DatabaseConnectionException } = require("../exception/CustomException");
+const logger = require("../../config/logger");
+const { DatabaseConnectionException } = require("../../exception/CustomException");
 
 // User 모델 정의
 class User {

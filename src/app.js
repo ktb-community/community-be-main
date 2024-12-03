@@ -36,19 +36,21 @@ process.env.NODE_ENV =
 	process.env.NODE_ENV && process.env.NODE_ENV.trim().toLowerCase() === "production" ? "production" : "development";
 
 /* uploads 경로 확인 */
-const uploadDir = `${process.cwd()}/uploads`;
-if (!fs.existsSync(uploadDir)) {
-	logger.info(`Create new Upload Directory: ${uploadDir}`);
-	fs.mkdirSync(uploadDir);
+const CWD = process.cwd();
+const uploadDir = [`${CWD}/uploads`, `${CWD}/uploads/auth`, `${CWD}/uploads/boards`];
+for (const dir of uploadDir) {
+	if (!fs.existsSync(dir)) {
+		logger.info(`Create new Upload Directory: ${dir}`);
+		fs.mkdirSync(dir);
+	}
 }
 
 /* logs 경로 확인 */
-const logDir = `${process.cwd()}/logs`;
-const checkPaths = [logDir, logDir + "/error", logDir + "/http", logDir + "/exception"];
-for (const path of checkPaths) {
-	if (!fs.existsSync(path)) {
-		logger.info(`Create new Log Directory: ${path}`);
-		fs.mkdirSync(path);
+const logDir = [`${CWD}/logs`, `${CWD}/logs/error`, `${CWD}/logs/http`, `${CWD}/logs/exception`];
+for (const dir of logDir) {
+	if (!fs.existsSync(dir)) {
+		logger.info(`Create new Log Directory: ${dir}`);
+		fs.mkdirSync(dir);
 	}
 }
 // ====================================================================================================================
@@ -62,18 +64,28 @@ app.use(corsMiddleware);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use("/uploads", (req, res, next) => {
-	res.setHeader("Access-Control-Allow-Origin", 'http://localhost:5173');
+	res.setHeader("Access-Control-Allow-Origin", 'http://localhost:5173, http://localhost:3000');
 	res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
 	next();
 }, express.static("uploads"));
 
 // ===================================== [라우터 등록] ======================================================
 // 애플리케이션 초기화 단계에서 의존성 주입 -> TODO: 추후 DI 프레임워크 도입 또는 fs 모듈로 자동화시키기
+const apiVersion = process.env.API_VERSION || "v1";
+logger.info(`Current API Version: ${apiVersion}`)
+
+if (apiVersion === "v1") {
+	/* Routers */
+	const authRouter = require("./v1/routes/authRouter");
+
+	app.use('/api/v1/auth', authRouter);
+}
+
 /* Model */
-const User = require("./models/user");
-const Board = require("./models/board");
-const BoardLike = require("./models/boardLike");
-const BoardComment = require("./models/boardComment");
+const User = require("./v2/models/user");
+const Board = require("./v2/models/board");
+const BoardLike = require("./v2/models/boardLike");
+const BoardComment = require("./v2/models/boardComment");
 
 const userModel = new User();
 const boardModel = new Board();
@@ -81,11 +93,11 @@ const boardLikeModel = new BoardLike();
 const boardCommentModel = new BoardComment();
 
 /* Service */
-const UserService = require("./services/userService");
-const BoardService = require("./services/boardService");
-const AuthService = require("./services/authService");
-const BoardCommentService = require("./services/boardCommentService");
-const BoardLikeService = require("./services/boardLikeService");
+const UserService = require("./v2/services/userService");
+const BoardService = require("./v2/services/boardService");
+const AuthService = require("./v2/services/authService");
+const BoardCommentService = require("./v2/services/boardCommentService");
+const BoardLikeService = require("./v2/services/boardLikeService");
 
 const userService = new UserService(userModel);
 const authService = new AuthService(userModel);
@@ -94,19 +106,18 @@ const boardCommentService = new BoardCommentService(boardCommentModel);
 const boardLikeService = new BoardLikeService(boardLikeModel);
 
 /* Router */
-const UserRouter = require("./routes/userRouter");
-const AuthRouter = require("./routes/authRouter");
-const BoardRouter = require("./routes/boardRouter");
+const UserRouter = require("./v2/routes/userRouter");
+const AuthRouter = require("./v2/routes/authRouter");
+const BoardRouter = require("./v2/routes/boardRouter");
 
 const userRouter = new UserRouter(userService);
 const authRouter = new AuthRouter(authService);
 const boardRouter = new BoardRouter(boardService, boardLikeService, boardCommentService);
 
 /* 라우터 등록 */
-const REQUEST_PATH = process.env.REQUEST_PATH;
-app.use(`${REQUEST_PATH}/users`, userRouter.router);
-app.use(`${REQUEST_PATH}/auth`, authRouter.router);
-app.use(`${REQUEST_PATH}/boards`, boardRouter.router);
+app.use(`/api/v2/users`, userRouter.router);
+app.use(`/api/v2/auth`, authRouter.router);
+app.use(`/api/v2/boards`, boardRouter.router);
 // =====================================================================================================================
 
 // ========================================= [500 에러 핸들링] ==========================================================

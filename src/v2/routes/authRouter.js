@@ -1,15 +1,15 @@
 const express = require("express");
 const fs = require("fs");
-const upload = require("../middlewares/multer");
-const logger = require("../config/logger");
-const { ResStatus } = require("../utils/const");
-const { sendJSONResponse } = require("../utils/utils");
+const upload = require("../../middlewares/multer");
+const logger = require("../../config/logger");
+const { ResStatus } = require("../../utils/const");
+const { sendJSONResponse } = require("../../utils/utils");
 const {
 	DuplicationException,
 	RequestArgumentException,
 	InvalidCredentialsException,
 	UserNotFoundException,
-} = require("../exception/CustomException");
+} = require("../../exception/CustomException");
 
 class AuthRouter {
 	constructor(authService) {

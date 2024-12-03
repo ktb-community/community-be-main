@@ -1,13 +1,13 @@
 const bcrypt = require("bcrypt");
 const process = require("process");
-const { JWTExpire } = require("../utils/const");
-const { generateToken, dateTimeFormat, withTransaction, checkArguments, checkPassword, verifyToken } = require("../utils/utils");
+const { JWTExpire } = require("../../utils/const");
+const { generateToken, dateTimeFormat, withTransaction, checkArguments, checkPassword, verifyToken } = require("../../utils/utils");
 const {
 	RequestArgumentException,
 	DuplicationException,
 	InvalidCredentialsException,
 	UserNotFoundException,
-} = require("../exception/CustomException");
+} = require("../../exception/CustomException");
 
 const ACCESS_TOKEN_SECRET_KEY = process.env.ACCESS_TOKEN_SECRET_KEY;
 const REFRESH_TOKEN_SECRET_KEY = process.env.REFRESH_TOKEN_SECRET_KEY;
