@@ -1,8 +1,17 @@
 const fs = require("fs");
-
+const { saveJsonFile } = require("../utils/loop");
+const logger = require("../../config/logger.js");
 const BOARD_JSON = `./src/v1/json/boards.json`;
 const boardJson = JSON.parse(fs.readFileSync(BOARD_JSON, "utf8"));
 const BOARDS = boardJson.data;
+let fetched = false;
+
+setInterval(() => {
+	if (!fetched) return;
+	logger.info("BOARD 테이블 갱신");
+	saveJsonFile(BOARD_JSON, { data: BOARDS });
+	fetched = false;
+}, 60 * 1000 * 5);
 
 module.exports = {
 	findBoards: (limit, offset) => {
@@ -46,8 +55,9 @@ module.exports = {
 
 	save: (board) => {
 		const index = BOARDS.findIndex(b => b.id === board.id);
-		if (index !== -1) BOARDS[index] = board;
-		const json = { data: BOARDS };
-		fs.writeFileSync(BOARD_JSON, JSON.stringify(json, null, 2), "utf8");
+		if (index !== -1) {
+			BOARDS[index] = board;
+			fetched = true;
+		}
 	}
 };
