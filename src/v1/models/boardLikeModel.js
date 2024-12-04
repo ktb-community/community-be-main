@@ -9,7 +9,7 @@ let fetched = false;
 
 setInterval(() => {
 	if (!fetched) return;
-	logger.info("BOARD 테이블 갱신");
+	logger.info("BOARD_LIKE 테이블 갱신");
 	saveJsonFile(BOARD_LIKE_JSON, { data: BOARD_LIKES });
 	fetched = false;
 }, 60 * 1000 * 5);

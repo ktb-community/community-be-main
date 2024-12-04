@@ -29,7 +29,7 @@ const authLogin = async (req, res) => {
 const authSignup = async (req, res) => {
 	const { email, password, nickname } = req.body;
 	const file = req.file;
-	const profileImg = path.join('http://localhost:8000', file.path);
+	const profileImg = `http://localhost:8000/${file.path.replace(/\\/g, '/')}`;
 
 	if (await User.findByEmail(email)) {
 		return sendJSONResponse(res, 400, ResStatus.EMAIL_DUPLICATED, "이미 사용중인 이메일입니다.");
@@ -49,7 +49,6 @@ const authSignup = async (req, res) => {
 	}
 
 	await User.save(user)
-	console.log(user);
 	return sendJSONResponse(res, 201, ResStatus.SUCCESS, "회원가입이 성공적으로 완료되었습니다.");
 }
 

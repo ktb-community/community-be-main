@@ -7,7 +7,7 @@
       "createdAt": "2024/11/05 12:30:22",
       "boardImg": null,
       "writerId": 1,
-      "viewCnt": 1
+      "viewCnt": 15
     },
     {
       "id": 2,
@@ -16,7 +16,7 @@
       "createdAt": "2024/11/05 12:30:22",
       "boardImg": null,
       "writerId": 1,
-      "viewCnt": 3
+      "viewCnt": 6
     },
     {
       "id": 3,
@@ -34,7 +34,7 @@
       "createdAt": "2024/11/05 12:30:22",
       "boardImg": null,
       "writerId": 1,
-      "viewCnt": 17
+      "viewCnt": 18
     },
     {
       "id": 5,
@@ -70,7 +70,7 @@
       "createdAt": "2024/11/05 12:30:22",
       "boardImg": null,
       "writerId": 1,
-      "viewCnt": 1
+      "viewCnt": 2
     },
     {
       "id": 9,
@@ -97,7 +97,7 @@
       "createdAt": "2024/11/05 12:30:22",
       "boardImg": null,
       "writerId": 1,
-      "viewCnt": 9
+      "viewCnt": 13
     },
     {
       "id": 12,
@@ -106,7 +106,7 @@
       "createdAt": "2024/11/05 12:30:22",
       "boardImg": "http://localhost:8000/uploads/boards/1733243739774_황승수3.jpg",
       "writerId": 1,
-      "viewCnt": 142
+      "viewCnt": 151
     }
   ]
 }

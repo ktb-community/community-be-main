@@ -33,7 +33,7 @@ module.exports = {
 			};
 		});
 
-		return sendJSONResponse(res, 200, ResStatus.SUCCESS, `게시글 ${boards.length}개를 가져왔습니다.`, boardList);
+		return sendJSONResponse(res, 200, ResStatus.SUCCESS, null, boardList);
 	},
 
 	getBoardDetail: (req, res) => {
@@ -62,7 +62,7 @@ module.exports = {
 			commentCnt: changeNumberExpression(commentCnt),
 		};
 
-		return sendJSONResponse(res, 200, ResStatus.SUCCESS, "게시글 상세 정보를 성공적으로 가져왔습니다.", boardDetail);
+		return sendJSONResponse(res, 200, ResStatus.SUCCESS, null, boardDetail);
 	},
 
 	countBoardView: (req, res) => {
@@ -76,6 +76,6 @@ module.exports = {
 		board.viewCnt += 1;
 		Board.save(board);
 
-		return sendJSONResponse(res, 200, ResStatus.SUCCESS, "조회수가 성공적으로 증가하였습니다.");
+		return sendJSONResponse(res, 200, ResStatus.SUCCESS, null);
 	},
 };

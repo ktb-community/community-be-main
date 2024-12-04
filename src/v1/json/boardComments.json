@@ -2,31 +2,31 @@
   "data": [
     {
       "id": 1,
-      "comment": "zzqwewqeqweqwezzzz",
+      "content": "zzqwewqeqweqwezzzz",
       "writerId": 1,
       "boardId": 1,
-      "createdAt": "2024/12/01 12:30:33"
+      "createdAt": "2024-12-01 12:30:33"
     },
     {
       "id": 2,
-      "comment": "zzzzzqweqez",
+      "content": "zzzzzqweqez",
       "writerId": 1,
       "boardId": 1,
-      "createdAt": "2024/12/01 12:30:33"
+      "createdAt": "2024-12-01 12:30:34"
     },
     {
       "id": 3,
-      "comment": "zzzzzqwxeqwz",
+      "content": "zzzzzqwxeqwz",
       "writerId": 1,
       "boardId": 1,
-      "createdAt": "2024/12/01 12:30:33"
+      "createdAt": "2024-12-01 12:30:36"
     },
     {
       "id": 4,
-      "comment": "zzzzzeqwexz",
+      "content": "ㅋㅋㅋㅋㅋㅋㅋㅋㅋ 개웃기네 진짜",
       "writerId": 1,
       "boardId": 1,
-      "createdAt": "2024/12/01 12:30:33"
+      "createdAt": "2024-12-01 12:30:39"
     }
   ]
 }

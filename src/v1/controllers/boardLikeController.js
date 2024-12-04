@@ -12,7 +12,6 @@ module.exports = {
 		}
 
 		const isLiked = BoardLike.existsByBoardIdAndUserId(boardId, userId);
-		console.log(boardId, userId, isLiked);
 
 		if (isLiked) {
 			BoardLike.deleteByBoardIdAndUserId(boardId, userId);
