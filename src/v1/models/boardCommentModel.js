@@ -1,5 +1,4 @@
 const fs = require('fs');
-
 const BOARD_COMMENT_JSON = `./src/v1/json/boardComments.json`;
 const boardCommentsJson = JSON.parse(fs.readFileSync(BOARD_COMMENT_JSON, "utf8"));
 const BOARD_COMMENTS = boardCommentsJson.data;

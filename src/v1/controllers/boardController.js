@@ -1,5 +1,6 @@
 const Board = require("../models/boardModel");
 const BoardComment = require("../models/boardCommentModel");
+const BoardLike = require("../models/boardLikeModel");
 const User = require("../models/userModel");
 const { sendJSONResponse, changeNumberExpression } = require("../../utils/utils");
 const { ResStatus } = require("../../utils/const");
@@ -16,6 +17,7 @@ module.exports = {
 
 		const boardList = boards.map(board => {
 			const commentCnt = BoardComment.countByBoardId(board.id);
+			const likeCnt = BoardLike.countByBoardId(board.id);
 			const writer = User.findById(board.writerId);
 
 			return {
@@ -24,7 +26,7 @@ module.exports = {
 				content: board.content.replaceAll("\n", "<br/>"),
 				createdAt: board.createdAt,
 				viewCnt: changeNumberExpression(board.viewCnt),
-				likeCnt: changeNumberExpression(board.likeCnt),
+				likeCnt: changeNumberExpression(likeCnt),
 				commentCnt: changeNumberExpression(commentCnt),
 				writerNickname: writer.nickname,
 				writerProfileImg: writer.profileImg || null,
@@ -39,10 +41,11 @@ module.exports = {
 		const board = Board.findById(boardId);
 
 		if (boardId === null || board === null) {
-			return sendJSONResponse(res, 503, ResStatus.ERROR, "예상치 못한 에러가 발생했습니다.");
+			return sendJSONResponse(res, 400, ResStatus.ERROR, "예상치 못한 에러가 발생했습니다.");
 		}
 
 		const writer = User.findById(board.writerId);
+		const likeCnt = BoardLike.countByBoardId(board.id);
 		const commentCnt = BoardComment.countByBoardId(board.id);
 
 		const boardDetail = {
@@ -51,11 +54,11 @@ module.exports = {
 			content: board.content,
 			createdAt: board.createdAt,
 			boardImg: board.boardImg,
-			writerId: writer.writerId,
+			writerId: writer.id,
 			writerNickname: writer.nickname,
 			writerProfileImg: writer.profileImg || null,
 			viewCnt: changeNumberExpression(board.viewCnt),
-			likeCnt: changeNumberExpression(board.likeCnt),
+			likeCnt: changeNumberExpression(likeCnt),
 			commentCnt: changeNumberExpression(commentCnt),
 		};
 
@@ -69,8 +72,6 @@ module.exports = {
 		if (boardId === null || board === null) {
 			return sendJSONResponse(res, 503, ResStatus.ERROR, "예상치 못한 에러가 발생했습니다.");
 		}
-
-		console.log(board);
 
 		board.viewCnt += 1;
 		Board.save(board);
