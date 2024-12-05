@@ -24,11 +24,25 @@ module.exports = {
 			}
 		})
 
-		return sendJSONResponse(res, 200, ResStatus.SUCCESS, null, boardComments.reverse());
+		return sendJSONResponse(res, 200, ResStatus.SUCCESS, null, boardComments);
 	},
 
 	addBoardComment: (req, res) => {
+		const boardId = req.params.boardId;
+		const { content, userId } = req.body;
+		const writer = User.findById(userId);
+		const comment = BoardComment.save(content, boardId, userId);
 
+		const boardComment = {
+			commentId: comment.id,
+			createdAt: comment.createdAt,
+			content: comment.content,
+			writerId: comment.writerId,
+			writerNickname: writer.nickname,
+			writerProfileImg: writer.profileImg || null,
+		}
+
+		return sendJSONResponse(res, 200, ResStatus.SUCCESS, '댓글이 정상적으로 등록되었습니다.', boardComment);
 	},
 
 	modifyBoardComment: (req, res) => {
