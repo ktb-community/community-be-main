@@ -2,7 +2,7 @@ const Board = require("../models/boardModel");
 const BoardComment = require("../models/boardCommentModel");
 const BoardLike = require("../models/boardLikeModel");
 const User = require("../models/userModel");
-const { sendJSONResponse, changeNumberExpression } = require("../../utils/utils");
+const { sendJSONResponse } = require("../../utils/utils");
 const { ResStatus } = require("../../utils/const");
 
 module.exports = {
@@ -25,9 +25,9 @@ module.exports = {
 				title: board.title,
 				content: board.content.replaceAll("\n", "<br/>"),
 				createdAt: board.createdAt,
-				viewCnt: changeNumberExpression(board.viewCnt),
-				likeCnt: changeNumberExpression(likeCnt),
-				commentCnt: changeNumberExpression(commentCnt),
+				viewCnt: board.viewCnt,
+				likeCnt: likeCnt,
+				commentCnt: commentCnt,
 				writerNickname: writer.nickname,
 				writerProfileImg: writer.profileImg || null,
 			};
@@ -57,9 +57,9 @@ module.exports = {
 			writerId: writer.id,
 			writerNickname: writer.nickname,
 			writerProfileImg: writer.profileImg || null,
-			viewCnt: changeNumberExpression(board.viewCnt),
-			likeCnt: changeNumberExpression(likeCnt),
-			commentCnt: changeNumberExpression(commentCnt),
+			viewCnt: board.viewCnt,
+			likeCnt: likeCnt,
+			commentCnt: commentCnt,
 		};
 
 		return sendJSONResponse(res, 200, ResStatus.SUCCESS, null, boardDetail);

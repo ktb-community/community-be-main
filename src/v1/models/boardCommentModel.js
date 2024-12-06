@@ -27,6 +27,22 @@ module.exports = {
 		return BOARD_COMMENTS.reduce((acc, boardComment) => boardComment.boardId === boardId ? acc + 1 : acc, 0);
 	},
 
+	deleteById: (commentId) => {
+		const index = BOARD_COMMENTS.findIndex(boardComment => boardComment.id === commentId);
+		if (index !== -1) {
+			BOARD_COMMENTS.splice(index, 1);
+			fetched = true;
+		}
+	},
+
+	modifyById: (commentId, content) => {
+		const index = BOARD_COMMENTS.findIndex(boardComment => boardComment.id === commentId);
+		if (index !== -1) {
+			BOARD_COMMENTS[index].content = content;
+			fetched = true;
+		}
+	},
+
 	save: (content, boardId, userId) => {
 		const id = BOARD_COMMENTS.length + 1;
 		const createdAt = dateTimeFormat(new Date(Date.now()));

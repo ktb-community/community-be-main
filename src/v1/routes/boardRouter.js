@@ -16,7 +16,7 @@ router.post('/:boardId/likes/:userId', boardLikeController.toggleBoardLike);
 /* BOARD_COMMENT */
 router.get('/:boardId/comments', boardCommentController.getBoardComments);
 router.post('/:boardId/comments', boardCommentController.addBoardComment);
-router.put('/:boardId/comments', boardCommentController.modifyBoardComment);
+router.patch('/:boardId/comments', boardCommentController.modifyBoardComment);
 router.delete('/:boardId/comments', boardCommentController.deleteBoardComment);
 
 module.exports = router;

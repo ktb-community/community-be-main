@@ -28,8 +28,13 @@ module.exports = {
 	},
 
 	addBoardComment: (req, res) => {
-		const boardId = req.params.boardId;
+		const boardId = parseInt(req.params.boardId, 10);
 		const { content, userId } = req.body;
+
+		if (content === '') {
+			return sendJSONResponse(res, 400, ResStatus.FAIL, "유효하지 않은 요청값입니다.");
+		}
+
 		const writer = User.findById(userId);
 		const comment = BoardComment.save(content, boardId, userId);
 
@@ -46,10 +51,41 @@ module.exports = {
 	},
 
 	modifyBoardComment: (req, res) => {
+		const boardId = parseInt(req.params.boardId, 10) || null;
+		const commentId = parseInt(req.body.commentId, 10) || null;
+		const userId = parseInt(req.body.userId, 10) || null;
+		const comment = req.body.comment;
 
+		if (!(boardId && commentId && userId)) {
+			return sendJSONResponse(res, 400, ResStatus.FAIL, "유효하지 않은 요청값입니다.");
+		}
+
+		const boardComment = BoardComment.findById(commentId);
+
+		if (boardComment.writerId !== userId || boardComment.boardId !== boardId) {
+			return sendJSONResponse(res, 400, ResStatus.FAIL, "유효하지 않은 요청값입니다.");
+		}
+
+		BoardComment.modifyById(commentId, comment);
+		return sendJSONResponse(res, 200, ResStatus.SUCCESS, null);
 	},
 
 	deleteBoardComment: (req, res) => {
+		const boardId = parseInt(req.params.boardId, 10) || null;
+		const userId = parseInt(req.body.userId, 10) || null;
+		const commentId = parseInt(req.body.commentId, 10) || null;
 
+		if (!(boardId && userId && commentId)) {
+			return sendJSONResponse(res, 400, ResStatus.FAIL, "유효하지 않은 요청값입니다.");
+		}
+
+		const boardComment = BoardComment.findById(commentId);
+
+		if (userId !== boardComment.writerId || boardId !== boardComment.boardId) {
+			return sendJSONResponse(res, 400, ResStatus.FAIL, "비정상적인 시도입니다.");
+		}
+
+		BoardComment.deleteById(commentId);
+		return sendJSONResponse(res, 200, ResStatus.SUCCESS, null);
 	}
 }

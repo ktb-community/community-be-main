@@ -1,3 +1,14 @@
 {
-  "data": []
+  "data": [
+    {
+      "boardId": 12,
+      "userId": 1,
+      "createdAt": "2024-12-06 00:19:20"
+    },
+    {
+      "boardId": 8,
+      "userId": 1,
+      "createdAt": "2024-12-06 11:52:55"
+    }
+  ]
 }

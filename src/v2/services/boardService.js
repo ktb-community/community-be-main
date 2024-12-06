@@ -1,5 +1,5 @@
 const process = require("process");
-const { withTransaction, checkArguments, dateTimeFormat, changeNumberExpression } = require("../../utils/utils");
+const { withTransaction, checkArguments, dateTimeFormat } = require("../../utils/utils");
 const { RequestArgumentException, UserNotFoundException } = require("../../exception/CustomException");
 const { UserRole } = require("../../utils/const");
 
@@ -43,9 +43,9 @@ class BoardService {
 			return {
 				...boardDetail,
 				createdAt: dateTimeFormat(new Date(boardDetail.createdAt)),
-				views: changeNumberExpression(boardDetail.views),
-				likeCnt: changeNumberExpression(boardDetail.likeCnt),
-				commentCnt: changeNumberExpression(boardDetail.commentCnt),
+				views: boardDetail.views,
+				likeCnt: boardDetail.likeCnt,
+				commentCnt: boardDetail.commentCnt,
 			}
 		})
 	}
