@@ -5,8 +5,17 @@
       "email": "luis.hwang@gmail.com",
       "password": "123123Aa!@",
       "nickname": "luis.hwang",
-      "profileImg": "http:\\localhost:8000\\uploads\\auth\\1733193015219_황승수2.jpg",
+      "profileImg": "uploads/auth/1733192976390_황승수2.jpg",
       "createdAt": "2024-12-03 11:30:15",
+      "lastLoginDate": null
+    },
+    {
+      "id": 2,
+      "email": "admin@gmail.com",
+      "password": "123123Aa!@",
+      "nickname": "qweqwxe",
+      "profileImg": "uploads/auth/1733462199819_황승수3.jpg",
+      "createdAt": "2024-12-06 14:16:39",
       "lastLoginDate": null
     }
   ]

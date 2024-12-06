@@ -77,8 +77,12 @@ logger.info(`Current API Version: ${apiVersion}`)
 if (apiVersion === "v1") {
 	/* Routers */
 	const authRouter = require("./v1/routes/authRouter");
+	const boardRouter = require('./v1/routes/boardRouter');
+	const userRouter = require('./v1/routes/userRouter');
 
 	app.use('/api/v1/auth', authRouter);
+	app.use('/api/v1/boards', boardRouter);
+	app.use('/api/v1/users', userRouter);
 }
 
 /* Model */

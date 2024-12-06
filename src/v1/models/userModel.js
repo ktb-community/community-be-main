@@ -1,36 +1,34 @@
 const fs = require("fs");
-const logger = require("../../config/logger");
+const logger = require("../../config/logger.js")
+const { saveJsonFile } = require("../utils/loop");
 const USER_JSON = `./src/v1/json/users.json`;
+const userJson = JSON.parse(fs.readFileSync(USER_JSON, "utf-8"));
+const USERS = userJson.data;
+let fetched = false;
 
-async function getUsers() {
-	try {
-		const json = JSON.parse(fs.readFileSync(USER_JSON, "utf-8"));
-		return json.data;
-	} catch (e) {
-		logger.error(e.stack);
-		return null;
-	}
-}
-
-const findByEmail = async email => {
-	const users = await getUsers();
-	return users.find(user => user.email === email);
-};
-
-const findByNickname = async nickname => {
-	const users = await getUsers();
-	return users.find(user => user.nickname === nickname);
-};
-
-const saveUser = async user => {
-	const users = await getUsers();
-	const newUsers = [...users, { id: users.length + 1, ...user }];
-	const json = { data: newUsers };
-	fs.writeFileSync(USER_JSON, JSON.stringify(json, null, 2), "utf8");
-};
+setInterval(() => {
+	if (!fetched) return;
+	logger.info("USER 테이블 갱신");
+	saveJsonFile(USER_JSON, { data: USERS });
+	fetched = false;
+}, 60 * 1000 * 5);
 
 module.exports = {
-	findByEmail,
-	findByNickname,
-	saveUser
-};
+	findById: userId => {
+		return USERS.find(user => user.id === userId) || null;
+	},
+
+	findByEmail: email => {
+		return USERS.find(user => user.email === email) || null;
+	},
+
+	findByNickname: nickname => {
+		return USERS.find(user => user.nickname === nickname) || null;
+	},
+
+	save: user => {
+		const newUser = { id: USERS.length + 1, ...user };
+		USERS.push(newUser);
+		fetched = true;
+	}
+}
