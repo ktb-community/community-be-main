@@ -2,80 +2,10 @@
   "data": [
     {
       "id": 1,
-      "createdAt": "2024-12-06 00:16:52",
-      "content": "ㅋㅋㅋㅋ",
-      "boardId": 2,
-      "writerId": 1
-    },
-    {
-      "id": 2,
-      "createdAt": "2024-12-06 00:16:58",
-      "content": "ㅋㅋㅋㅋ",
-      "boardId": 2,
-      "writerId": 1
-    },
-    {
-      "id": 3,
-      "createdAt": "2024-12-06 00:17:02",
+      "createdAt": "2024-12-06 14:16:52",
       "content": "뭐임",
       "boardId": 2,
-      "writerId": 1
-    },
-    {
-      "id": 4,
-      "createdAt": "2024-12-06 00:18:03",
-      "content": "?",
-      "boardId": 5,
-      "writerId": 1
-    },
-    {
-      "id": 5,
-      "createdAt": "2024-12-06 00:18:40",
-      "content": "<html>\n <head>\n   <script>alert(\"hi\");</script>\n </head>\n <body></body>\n</html>",
-      "boardId": 5,
-      "writerId": 1
-    },
-    {
-      "id": 6,
-      "createdAt": "2024-12-06 10:18:17",
-      "content": "ㅋㅋㅋㅋ??ㅁㅁㅁ",
-      "boardId": 12,
-      "writerId": 1
-    },
-    {
-      "id": 12,
-      "createdAt": "2024-12-06 11:56:27",
-      "content": "ㄴㄴ",
-      "boardId": 8,
-      "writerId": 1
-    },
-    {
-      "id": 10,
-      "createdAt": "2024-12-06 12:47:26",
-      "content": "ㅋㅋ",
-      "boardId": 6,
-      "writerId": 1
-    },
-    {
-      "id": 9,
-      "createdAt": "2024-12-06 13:00:54",
-      "content": "ㅋㅋㅋㅋㅋㅋㅋㅋㅋ",
-      "boardId": 12,
-      "writerId": 1
-    },
-    {
-      "id": 10,
-      "createdAt": "2024-12-06 13:04:06",
-      "content": "ㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋ",
-      "boardId": 12,
-      "writerId": 1
-    },
-    {
-      "id": 11,
-      "createdAt": "2024-12-06 13:05:02",
-      "content": "ㅂㅈㄷㅂㅈㄷ",
-      "boardId": 12,
-      "writerId": 1
+      "writerId": 2
     }
   ]
 }

@@ -54,6 +54,11 @@ module.exports = {
 	},
 
 	save: (board) => {
+		BOARDS.push({ ...board, id: BOARDS.length + 1 });
+		console.log({ ...board, id: BOARDS.length + 1 });
+	},
+
+	modify: (board) => {
 		const index = BOARDS.findIndex(b => b.id === board.id);
 		if (index !== -1) {
 			BOARDS[index] = board;

@@ -2,7 +2,7 @@ const Board = require("../models/boardModel");
 const BoardComment = require("../models/boardCommentModel");
 const BoardLike = require("../models/boardLikeModel");
 const User = require("../models/userModel");
-const { sendJSONResponse } = require("../../utils/utils");
+const { sendJSONResponse, dateTimeFormat } = require("../../utils/utils");
 const { ResStatus } = require("../../utils/const");
 
 module.exports = {
@@ -12,7 +12,7 @@ module.exports = {
 		const boards = Board.findBoards(limit, offset);
 
 		if (boards === null) {
-			return sendJSONResponse(res, 503, ResStatus.ERROR, "예상치 못한 에러가 발생했습니다.");
+			return sendJSONResponse(res, 400, ResStatus.ERROR, "예상치 못한 에러가 발생했습니다.");
 		}
 
 		const boardList = boards.map(board => {
@@ -34,6 +34,28 @@ module.exports = {
 		});
 
 		return sendJSONResponse(res, 200, ResStatus.SUCCESS, null, boardList);
+	},
+
+	addBoard: (req, res) => {
+		const userId = parseInt(req.body.userId, 10) || null;
+		const { title, content } = req.body;
+		const boardImg = req.file;
+
+		if (!userId) {
+			return sendJSONResponse(res, 400, ResStatus.ERROR, "예상치 못한 에러가 발생했습니다.");
+		}
+
+		const board = {
+			title,
+			content,
+			createdAt: dateTimeFormat(new Date(Date.now())),
+			boardImg: boardImg.path,
+			viewCnt: 0,
+			writerId: userId
+		};
+
+		Board.save(board);
+		return sendJSONResponse(res, 201, ResStatus.SUCCESS, null);
 	},
 
 	getBoardDetail: (req, res) => {
@@ -74,7 +96,7 @@ module.exports = {
 		}
 
 		board.viewCnt += 1;
-		Board.save(board);
+		Board.modify(board);
 
 		return sendJSONResponse(res, 200, ResStatus.SUCCESS, null);
 	},
