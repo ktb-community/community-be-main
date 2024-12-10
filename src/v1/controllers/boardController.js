@@ -160,7 +160,11 @@ module.exports = {
 		// Board 이미지 삭제
 		const imgPath = path.join(process.cwd(), board.boardImg);
 		fs.unlink(imgPath, () => logger.info(`${imgPath} 제거`));
+
+		const likeCnt = BoardLike.deleteAllByBoardId(boardId);
+		const commentCnt = BoardComment.deleteAllByBoardId(boardId);
 		Board.deleteById(boardId);
+		logger.info(`좋아요 ${likeCnt}, 댓글 ${commentCnt}가 함께 삭제되었습니다.`);
 
 		return sendJSONResponse(res, 200, ResStatus.SUCCESS, null);
 	}

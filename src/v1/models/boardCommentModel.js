@@ -35,6 +35,20 @@ module.exports = {
 		}
 	},
 
+	deleteAllByBoardId: (boardId) => {
+		let cnt = 0;
+
+		for (let i = BOARD_COMMENTS.length - 1; i >= 0; i--) {
+			if (BOARD_COMMENTS[i].boardId === boardId) {
+				cnt++;
+				BOARD_COMMENTS.splice(i, 1);
+			}
+		}
+
+		if (cnt > 0) fetched = true;
+		return cnt;
+	},
+
 	deleteAllByUserId: (userId) => {
 		let cnt = 0;
 

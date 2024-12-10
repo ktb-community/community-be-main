@@ -8,7 +8,7 @@ module.exports = {
 		const userId = parseInt(req.params.userId, 10) || null;
 
 		if (!boardId || !userId) {
-			return sendJSONResponse(res, 400, ResStatus.ERROR, "유효하지 않은 요청입니다.");
+			return sendJSONResponse(res, 400, ResStatus.FAIL, "유효하지 않은 요청입니다.");
 		}
 
 		const isLiked = BoardLike.existsByBoardIdAndUserId(boardId, userId);
@@ -27,10 +27,10 @@ module.exports = {
 		const userId = parseInt(req.params.userId, 10) || null;
 
 		if (!boardId || !userId) {
-			return sendJSONResponse(res, 400, ResStatus.ERROR, "유효하지 않은 요청입니다.");
+			return sendJSONResponse(res, 400, ResStatus.FAIL, "유효하지 않은 요청입니다.");
 		}
 
 		const isLiked = BoardLike.existsByBoardIdAndUserId(boardId, userId);
-		return sendJSONResponse(res, 200, ResStatus.ERROR, null, isLiked);
+		return sendJSONResponse(res, 200, ResStatus.SUCCESS, null, isLiked);
 	},
 }
