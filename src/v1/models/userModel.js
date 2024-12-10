@@ -11,7 +11,7 @@ setInterval(() => {
 	logger.info("USER 테이블 갱신");
 	saveJsonFile(USER_JSON, { data: USERS });
 	fetched = false;
-}, 60 * 1000 * 5);
+}, 60 * 1000);
 
 module.exports = {
 	findById: userId => {

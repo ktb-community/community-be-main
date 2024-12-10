@@ -12,7 +12,7 @@ setInterval(() => {
 	logger.info("BOARD_LIKE 테이블 갱신");
 	saveJsonFile(BOARD_LIKE_JSON, { data: BOARD_LIKES });
 	fetched = false;
-}, 60 * 1000 * 5);
+}, 60 * 1000);
 
 module.exports = {
 	countByBoardId: (boardId) => {

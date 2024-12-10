@@ -12,7 +12,7 @@ setInterval(() => {
 	logger.info("BOARD_LIKE 테이블 갱신");
 	saveJsonFile(BOARD_COMMENT_JSON, { data: BOARD_COMMENTS });
 	fetched = false;
-}, 60 * 1000 * 5);
+}, 60 * 1000);
 
 module.exports = {
 	findById: (commentId) => {

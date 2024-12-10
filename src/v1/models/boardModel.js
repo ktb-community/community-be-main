@@ -11,7 +11,7 @@ setInterval(() => {
 	logger.info("BOARD 테이블 갱신");
 	saveJsonFile(BOARD_JSON, { data: BOARDS });
 	fetched = false;
-}, 60 * 1000 * 5);
+}, 60 * 1000);
 
 module.exports = {
 	findBoards: (limit, offset) => {
