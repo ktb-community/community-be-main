@@ -1,14 +1,5 @@
 {
   "data": [
-    {
-      "boardId": 1,
-      "userId": 1,
-      "createdAt": "2024-12-06 14:07:14"
-    },
-    {
-      "boardId": 2,
-      "userId": 2,
-      "createdAt": "2024-12-06 14:17:14"
-    }
+
   ]
 }

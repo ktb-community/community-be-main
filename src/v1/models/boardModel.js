@@ -53,9 +53,17 @@ module.exports = {
 		return null;
 	},
 
+	deleteById: (boardId) => {
+		const index = BOARDS.findIndex(board => board.id === boardId);
+
+		if (boardId !== -1) {
+			BOARDS.splice(index, 1);
+			fetched = true;
+		}
+	},
+
 	save: (board) => {
 		BOARDS.push({ ...board, id: BOARDS.length + 1 });
-		console.log({ ...board, id: BOARDS.length + 1 });
 	},
 
 	modify: (board) => {

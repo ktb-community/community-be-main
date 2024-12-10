@@ -39,6 +39,7 @@ module.exports = {
 		const index = BOARD_COMMENTS.findIndex(boardComment => boardComment.id === commentId);
 		if (index !== -1) {
 			BOARD_COMMENTS[index].content = content;
+			BOARD_COMMENTS[index].modifiedAt = dateTimeFormat(new Date(Date.now()));
 			fetched = true;
 		}
 	},
@@ -46,7 +47,8 @@ module.exports = {
 	save: (content, boardId, userId) => {
 		const id = BOARD_COMMENTS.length + 1;
 		const createdAt = dateTimeFormat(new Date(Date.now()));
-		const boardComment = { id, createdAt, content, boardId, writerId: userId };
+		const modifiedAt = createdAt;
+		const boardComment = { id, createdAt, modifiedAt, content, boardId, writerId: userId };
 		BOARD_COMMENTS.push(boardComment);
 		fetched = true;
 		return boardComment;

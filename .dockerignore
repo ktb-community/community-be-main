@@ -1,0 +1,7 @@
+logs/
+uploads/
+schema/
+.eslintrc.mjs
+eslint.config.mjs
+.prettierrc.json
+.gitignore

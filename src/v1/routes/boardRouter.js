@@ -7,9 +7,11 @@ const boardLikeController = require('../controllers/boardLikeController');
 const boardCommentController = require('../controllers/boardCommentController');
 
 /* BOARD */
-router.get('/', boardController.getBoardList)
-router.post('/', upload.single("boardImg"), boardController.addBoard)
-router.get('/:boardId', boardController.getBoardDetail)
+router.get('/', boardController.getBoardList);
+router.post('/', upload.single("boardImg"), boardController.addBoard);
+router.get('/:boardId', boardController.getBoardDetail);
+router.put('/:boardId', upload.single("boardImg"), boardController.modifyBoard);
+router.delete('/:boardId', boardController.deleteBoard);
 router.post('/:boardId/views', boardController.countBoardView);
 
 /* BOARD_LIKE */
