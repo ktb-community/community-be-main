@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const process = require("process");
+const logger = require("../../config/logger");
 const Board = require("../models/boardModel");
 const BoardComment = require("../models/boardCommentModel");
 const BoardLike = require("../models/boardLikeModel");
@@ -125,12 +126,17 @@ module.exports = {
 			return sendJSONResponse(res, 400, ResStatus.ERROR, "예상치 못한 에러가 발생했습니다.");
 		}
 
+		// 기존 이미지 삭제
+		const imgPath = path.join(process.cwd(), board.boardImg);
+		fs.unlink(imgPath, () => logger.info(`${imgPath} 제거`));
+
 		// board 수정
 		const newBoard = {
 			...board,
-			modifiedAt: dateTimeFormat(new Date(Date.now())),
 			title,
-			content
+			content,
+			modifiedAt: dateTimeFormat(new Date(Date.now())),
+			boardImg: boardImg.path
 		}
 
 		Board.modify(newBoard);
@@ -153,7 +159,7 @@ module.exports = {
 
 		// Board 이미지 삭제
 		const imgPath = path.join(process.cwd(), board.boardImg);
-		fs.rmSync(imgPath);
+		fs.unlink(imgPath, () => logger.info(`${imgPath} 제거`));
 		Board.deleteById(boardId);
 
 		return sendJSONResponse(res, 200, ResStatus.SUCCESS, null);

@@ -30,5 +30,15 @@ module.exports = {
 		const newUser = { id: USERS.length + 1, ...user };
 		USERS.push(newUser);
 		fetched = true;
+	},
+
+	modify: user => {
+		const userId = user.id;
+		const index = USERS.findIndex(user => user.id === userId);
+
+		if (index > -1) {
+			USERS[index] = user;
+			fetched = true;
+		}
 	}
 }

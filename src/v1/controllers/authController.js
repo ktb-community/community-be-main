@@ -1,4 +1,3 @@
-const path = require("path");
 const { sendJSONResponse, dateTimeFormat } = require("../../utils/utils");
 const { ResStatus } = require("../../utils/const");
 const User = require("../models/userModel");
@@ -15,15 +14,19 @@ const authLogin = async (req, res) => {
 		return sendJSONResponse(res, 400, ResStatus.PASSWORD_NOT_MATCH, "비밀번호가 일치하지 않습니다.");
 	}
 
-	const resData = {
+	const editUser = {
+		...user,
+		lastLoginDate: dateTimeFormat(new Date(Date.now())),
+	}
+	User.modify(editUser);
+
+	return sendJSONResponse(res, 200, ResStatus.SUCCESS, "로그인이 성공적으로 완료되었습니다.", {
 		id: user.id,
 		email: user.email,
 		nickname: user.nickname,
 		profile: user.profileImg,
-		lastLoginDate: user.lastLoginDate
-	}
-
-	return sendJSONResponse(res, 200, ResStatus.SUCCESS, "로그인이 성공적으로 완료되었습니다.", resData);
+		lastLoginDate: dateTimeFormat(new Date(Date.now())),
+	});
 }
 
 const authSignup = async (req, res) => {
@@ -45,6 +48,7 @@ const authSignup = async (req, res) => {
 		nickname,
 		profileImg,
 		createdAt: dateTimeFormat(new Date(Date.now())),
+		modifiedAt: dateTimeFormat(new Date(Date.now())),
 		lastLoginDate: null,
 	}
 
