@@ -1,14 +1,4 @@
 {
   "data": [
-    {
-      "id": 1,
-      "email": "h970126@gmail.com",
-      "password": "123123Aa!@",
-      "nickname": "luis.hwan",
-      "profileImg": "uploads/boards/1733832524368_ok.png",
-      "createdAt": "2024-12-10 21:08:14",
-      "modifiedAt": "2024-12-10 21:09:04",
-      "lastLoginDate": "2024-12-10 21:08:19"
-    }
   ]
 }

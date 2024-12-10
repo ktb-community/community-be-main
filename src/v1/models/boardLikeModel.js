@@ -12,7 +12,7 @@ setInterval(() => {
 	logger.info("BOARD_LIKE 테이블 갱신");
 	saveJsonFile(BOARD_LIKE_JSON, { data: BOARD_LIKES });
 	fetched = false;
-}, 60 * 1000 * 5);
+}, 60 * 1000);
 
 module.exports = {
 	countByBoardId: (boardId) => {
@@ -31,7 +31,21 @@ module.exports = {
 		}
 	},
 
-	deleteAllByUserId: (userId => {
+	deleteAllByBoardId: (boardId) => {
+		let cnt = 0;
+
+		for (let i = BOARD_LIKES.length - 1; i >= 0; i--) {
+			if (BOARD_LIKES[i].boardId === boardId) {
+				BOARD_LIKES.splice(i, 1);
+				cnt++;
+			}
+		}
+
+		if (cnt > 0) fetched = true;
+		return cnt;
+	},
+
+	deleteAllByUserId: (userId) => {
 		let cnt = 0;
 
 		for (let i = BOARD_LIKES.length - 1; i >= 0; i--) {
@@ -43,7 +57,7 @@ module.exports = {
 
 		if (cnt > 0) fetched = true;
 		return cnt;
-	}),
+	},
 
 	save: (boardId, userId) => {
 		BOARD_LIKES.push({ boardId, userId, createdAt: dateTimeFormat(new Date(Date.now()))})

@@ -12,7 +12,7 @@ setInterval(() => {
 	logger.info("BOARD_LIKE 테이블 갱신");
 	saveJsonFile(BOARD_COMMENT_JSON, { data: BOARD_COMMENTS });
 	fetched = false;
-}, 60 * 1000 * 5);
+}, 60 * 1000);
 
 module.exports = {
 	findById: (commentId) => {
@@ -33,6 +33,20 @@ module.exports = {
 			BOARD_COMMENTS.splice(index, 1);
 			fetched = true;
 		}
+	},
+
+	deleteAllByBoardId: (boardId) => {
+		let cnt = 0;
+
+		for (let i = BOARD_COMMENTS.length - 1; i >= 0; i--) {
+			if (BOARD_COMMENTS[i].boardId === boardId) {
+				cnt++;
+				BOARD_COMMENTS.splice(i, 1);
+			}
+		}
+
+		if (cnt > 0) fetched = true;
+		return cnt;
 	},
 
 	deleteAllByUserId: (userId) => {

@@ -27,7 +27,7 @@ app.use(helmet({
 app.use(rateLimit({
 	windowMs: 1000,
 	max: 30,
-	message: "최대 요청에 도달했습니다. 1분 뒤 다시 시도해주세요."
+	message: "최대 요청에 도달했습니다. 잠시 후 다시 시도해주세요."
 }));
 
 // ========================================= [초기화 단계] ===========================================================
@@ -70,7 +70,6 @@ app.use("/uploads", (req, res, next) => {
 }, express.static("uploads"));
 
 // ===================================== [라우터 등록] ======================================================
-// 애플리케이션 초기화 단계에서 의존성 주입 -> TODO: 추후 DI 프레임워크 도입 또는 fs 모듈로 자동화시키기
 const apiVersion = process.env.API_VERSION || "v1";
 logger.info(`Current API Version: ${apiVersion}`)
 
@@ -86,6 +85,8 @@ if (apiVersion === "v1") {
 }
 
 else if (apiVersion === "v2") {
+	// 애플리케이션 초기화 단계에서 의존성 주입 -> TODO: 추후 DI 프레임워크 도입 또는 fs 모듈로 자동화시키기
+
 	/* Model */
 	const User = require("./v2/models/user");
 	const Board = require("./v2/models/board");
