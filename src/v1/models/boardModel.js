@@ -62,6 +62,20 @@ module.exports = {
 		}
 	},
 
+	deleteAllByUserId: (userId) => {
+		let cnt = 0;
+
+		for (let i = BOARDS.length - 1; i >= 0; i--) {
+			if (BOARDS[i].writerId === userId) {
+				BOARDS.splice(i, 1);
+				cnt++;
+			}
+		}
+
+		if (cnt > 0) fetched = true;
+		return cnt;
+	},
+
 	save: (board) => {
 		BOARDS.push({ ...board, id: BOARDS.length + 1 });
 	},

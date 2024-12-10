@@ -26,6 +26,14 @@ module.exports = {
 		return USERS.find(user => user.nickname === nickname) || null;
 	},
 
+	deleteById: userId => {
+		const index = USERS.findIndex(user => user.id === userId);
+		if (index > -1) {
+			USERS.splice(index, 1);
+			fetched = true;
+		}
+	},
+
 	save: user => {
 		const newUser = { id: USERS.length + 1, ...user };
 		USERS.push(newUser);

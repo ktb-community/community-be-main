@@ -1,3 +1,5 @@
+const withTransaction = require("../../middlewares/transaction")
+
 class BoardLikeService {
 	/**
 	 * @param {BoardLike} boardLikeModel

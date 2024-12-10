@@ -1,4 +1,5 @@
-const { checkArguments, withTransaction, checkPassword } = require("../../utils/utils");
+const withTransaction = require("../../middlewares/transaction")
+const { checkArguments, checkPassword } = require("../../utils/utils");
 const { RequestArgumentException } = require("../../exception/CustomException");
 const bcrypt = require("bcrypt");
 

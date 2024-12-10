@@ -35,6 +35,20 @@ module.exports = {
 		}
 	},
 
+	deleteAllByUserId: (userId) => {
+		let cnt = 0;
+
+		for (let i = BOARD_COMMENTS.length - 1; i >= 0; i--) {
+			if (BOARD_COMMENTS[i].writerId === userId) {
+				BOARD_COMMENTS.splice(i, 1);
+				cnt++;
+			}
+		}
+
+		if (cnt > 0) fetched = true;
+		return cnt;
+	},
+
 	modifyById: (commentId, content) => {
 		const index = BOARD_COMMENTS.findIndex(boardComment => boardComment.id === commentId);
 		if (index !== -1) {

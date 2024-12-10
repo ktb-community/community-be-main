@@ -24,7 +24,7 @@ db.getConnection()
 		conn.release();
 	})
 	.catch(err => {
-		logger.error("Connection Error: ", err);
+		logger.error("Connection Error: ", err.message);
 		process.exit(1);
 	})
 

@@ -25,8 +25,8 @@ app.use(helmet({
 }));
 
 app.use(rateLimit({
-	windowMs: 60 * 1000,
-	max: 1000,
+	windowMs: 1000,
+	max: 30,
 	message: "최대 요청에 도달했습니다. 1분 뒤 다시 시도해주세요."
 }));
 
@@ -85,43 +85,45 @@ if (apiVersion === "v1") {
 	app.use('/api/v1/users', userRouter);
 }
 
-/* Model */
-const User = require("./v2/models/user");
-const Board = require("./v2/models/board");
-const BoardLike = require("./v2/models/boardLike");
-const BoardComment = require("./v2/models/boardComment");
+else if (apiVersion === "v2") {
+	/* Model */
+	const User = require("./v2/models/user");
+	const Board = require("./v2/models/board");
+	const BoardLike = require("./v2/models/boardLike");
+	const BoardComment = require("./v2/models/boardComment");
 
-const userModel = new User();
-const boardModel = new Board();
-const boardLikeModel = new BoardLike();
-const boardCommentModel = new BoardComment();
+	const userModel = new User();
+	const boardModel = new Board();
+	const boardLikeModel = new BoardLike();
+	const boardCommentModel = new BoardComment();
 
-/* Service */
-const UserService = require("./v2/services/userService");
-const BoardService = require("./v2/services/boardService");
-const AuthService = require("./v2/services/authService");
-const BoardCommentService = require("./v2/services/boardCommentService");
-const BoardLikeService = require("./v2/services/boardLikeService");
+	/* Service */
+	const UserService = require("./v2/services/userService");
+	const BoardService = require("./v2/services/boardService");
+	const AuthService = require("./v2/services/authService");
+	const BoardCommentService = require("./v2/services/boardCommentService");
+	const BoardLikeService = require("./v2/services/boardLikeService");
 
-const userService = new UserService(userModel);
-const authService = new AuthService(userModel);
-const boardService = new BoardService(boardModel, userModel);
-const boardCommentService = new BoardCommentService(boardCommentModel);
-const boardLikeService = new BoardLikeService(boardLikeModel);
+	const userService = new UserService(userModel);
+	const authService = new AuthService(userModel);
+	const boardService = new BoardService(boardModel, userModel);
+	const boardCommentService = new BoardCommentService(boardCommentModel);
+	const boardLikeService = new BoardLikeService(boardLikeModel);
 
-/* Router */
-const UserRouter = require("./v2/routes/userRouter");
-const AuthRouter = require("./v2/routes/authRouter");
-const BoardRouter = require("./v2/routes/boardRouter");
+	/* Router */
+	const UserRouter = require("./v2/routes/userRouter");
+	const AuthRouter = require("./v2/routes/authRouter");
+	const BoardRouter = require("./v2/routes/boardRouter");
 
-const userRouter = new UserRouter(userService);
-const authRouter = new AuthRouter(authService);
-const boardRouter = new BoardRouter(boardService, boardLikeService, boardCommentService);
+	const userRouter = new UserRouter(userService);
+	const authRouter = new AuthRouter(authService);
+	const boardRouter = new BoardRouter(boardService, boardLikeService, boardCommentService);
 
-/* 라우터 등록 */
-app.use(`/api/v2/users`, userRouter.router);
-app.use(`/api/v2/auth`, authRouter.router);
-app.use(`/api/v2/boards`, boardRouter.router);
+	/* 라우터 등록 */
+	app.use(`/api/v2/users`, userRouter.router);
+	app.use(`/api/v2/auth`, authRouter.router);
+	app.use(`/api/v2/boards`, boardRouter.router);
+}
 // =====================================================================================================================
 
 // ========================================= [500 에러 핸들링] ==========================================================

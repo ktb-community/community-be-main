@@ -10,6 +10,9 @@ const ResStatus = Object.freeze({
 	/* SIGNUP */
 	EMAIL_DUPLICATED: 'Email already exists',
 	NICKNAME_DUPLICATED: 'Nickname already exists',
+
+	/* EDIT */
+	SAME_PASSWORD: 'Password must not be same'
 });
 
 const UserRole = Object.freeze({

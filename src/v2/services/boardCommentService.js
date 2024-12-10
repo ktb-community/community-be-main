@@ -1,4 +1,5 @@
-const { withTransaction, checkArguments, escapeXSS, dateTimeFormat } = require("../../utils/utils");
+const withTransaction = require("../../middlewares/transaction")
+const { checkArguments, escapeXSS, dateTimeFormat } = require("../../utils/utils");
 const { RequestArgumentException } = require("../../exception/CustomException");
 const { UserRole } = require("../../utils/const");
 
