@@ -19,10 +19,6 @@ module.exports = {
 		return BOARD_LIKES.reduce((acc, boardLike) => boardLike.boardId === boardId ? acc + 1 : acc, 0)
 	},
 
-	findByBoardId: (boardId) => {
-		return BOARD_LIKES.filter(boardLike => boardLike.boardId === boardId);
-	},
-
 	existsByBoardIdAndUserId: (boardId, userId) => {
 		return BOARD_LIKES.find(boardLike => boardLike.boardId === boardId && boardLike.userId === userId) !== undefined;
 	},
@@ -34,6 +30,20 @@ module.exports = {
 			fetched = true;
 		}
 	},
+
+	deleteAllByUserId: (userId => {
+		let cnt = 0;
+
+		for (let i = BOARD_LIKES.length - 1; i >= 0; i--) {
+			if (BOARD_LIKES[i].likerId === userId) {
+				BOARD_LIKES.splice(i, 1);
+				cnt++;
+			}
+		}
+
+		if (cnt > 0) fetched = true;
+		return cnt;
+	}),
 
 	save: (boardId, userId) => {
 		BOARD_LIKES.push({ boardId, userId, createdAt: dateTimeFormat(new Date(Date.now()))})

@@ -1,7 +1,8 @@
 const bcrypt = require("bcrypt");
 const process = require("process");
+const withTransaction = require("../../middlewares/transaction")
 const { JWTExpire } = require("../../utils/const");
-const { generateToken, dateTimeFormat, withTransaction, checkArguments, checkPassword, verifyToken } = require("../../utils/utils");
+const { generateToken, dateTimeFormat, checkArguments, checkPassword, verifyToken } = require("../../utils/utils");
 const {
 	RequestArgumentException,
 	DuplicationException,

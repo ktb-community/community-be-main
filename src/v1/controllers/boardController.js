@@ -1,3 +1,7 @@
+const fs = require("fs");
+const path = require("path");
+const process = require("process");
+const logger = require("../../config/logger");
 const Board = require("../models/boardModel");
 const BoardComment = require("../models/boardCommentModel");
 const BoardLike = require("../models/boardLikeModel");
@@ -34,28 +38,6 @@ module.exports = {
 		});
 
 		return sendJSONResponse(res, 200, ResStatus.SUCCESS, null, boardList);
-	},
-
-	addBoard: (req, res) => {
-		const userId = parseInt(req.body.userId, 10) || null;
-		const { title, content } = req.body;
-		const boardImg = req.file;
-
-		if (!userId) {
-			return sendJSONResponse(res, 400, ResStatus.ERROR, "예상치 못한 에러가 발생했습니다.");
-		}
-
-		const board = {
-			title,
-			content,
-			createdAt: dateTimeFormat(new Date(Date.now())),
-			boardImg: boardImg.path,
-			viewCnt: 0,
-			writerId: userId
-		};
-
-		Board.save(board);
-		return sendJSONResponse(res, 201, ResStatus.SUCCESS, null);
 	},
 
 	getBoardDetail: (req, res) => {
@@ -100,4 +82,86 @@ module.exports = {
 
 		return sendJSONResponse(res, 200, ResStatus.SUCCESS, null);
 	},
+
+	addBoard: (req, res) => {
+		const userId = parseInt(req.body.userId, 10) || null;
+		const { title, content } = req.body;
+		const boardImg = req.file;
+
+		if (!userId) {
+			return sendJSONResponse(res, 400, ResStatus.ERROR, "예상치 못한 에러가 발생했습니다.");
+		}
+
+		const board = {
+			title,
+			content,
+			createdAt: dateTimeFormat(new Date(Date.now())),
+			modifiedAt: dateTimeFormat(new Date(Date.now())),
+			boardImg: boardImg.path,
+			viewCnt: 0,
+			writerId: userId
+		};
+
+		Board.save(board);
+		return sendJSONResponse(res, 201, ResStatus.SUCCESS, null);
+	},
+
+	modifyBoard: (req, res) => {
+		const boardId = parseInt(req.params.boardId, 10) || null;
+		const userId = parseInt(req.body.userId, 10) || null;
+		const { title, content } = req.body;
+		const boardImg = req.file;
+
+		if (!boardId || !userId || !boardImg) {
+			return sendJSONResponse(res, 400, ResStatus.ERROR, "예상치 못한 에러가 발생했습니다.");
+		}
+
+		if (title.length === 0 || content.length === 0 || title.length > 26) {
+			return sendJSONResponse(res, 400, ResStatus.ERROR, "제목 또는 본문의 길이가 적절하지 않습니다.");
+		}
+
+		const board = Board.findById(boardId);
+
+		if (board.writerId !== userId) {
+			return sendJSONResponse(res, 400, ResStatus.ERROR, "예상치 못한 에러가 발생했습니다.");
+		}
+
+		// 기존 이미지 삭제
+		const imgPath = path.join(process.cwd(), board.boardImg);
+		fs.unlink(imgPath, () => logger.info(`${imgPath} 제거`));
+
+		// board 수정
+		const newBoard = {
+			...board,
+			title,
+			content,
+			modifiedAt: dateTimeFormat(new Date(Date.now())),
+			boardImg: boardImg.path
+		}
+
+		Board.modify(newBoard);
+		return sendJSONResponse(res, 200, ResStatus.SUCCESS, null);
+	},
+
+	deleteBoard: (req, res) => {
+		const boardId = parseInt(req.params.boardId, 10) || null;
+		const userId = parseInt(req.body.userId, 10) || null;
+
+		if (!boardId || !userId) {
+			return sendJSONResponse(res, 400, ResStatus.ERROR, "유효하지 않은 요청입니다.");
+		}
+
+		const board = Board.findById(boardId);
+
+		if (board.writerId !== userId) {
+			return sendJSONResponse(res, 400, ResStatus.ERROR, "유효하지 않은 요청입니다.");
+		}
+
+		// Board 이미지 삭제
+		const imgPath = path.join(process.cwd(), board.boardImg);
+		fs.unlink(imgPath, () => logger.info(`${imgPath} 제거`));
+		Board.deleteById(boardId);
+
+		return sendJSONResponse(res, 200, ResStatus.SUCCESS, null);
+	}
 };

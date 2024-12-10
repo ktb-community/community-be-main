@@ -1,31 +1,3 @@
 {
-  "data": [
-    {
-      "id": 1,
-      "title": "eqweqwe",
-      "content": "qweqwexqwex",
-      "createdAt": "2024-12-06 14:06:58",
-      "boardImg": "uploads\\boards\\1733461618088_황승수.jpg",
-      "writerId": 1,
-      "viewCnt": 7
-    },
-    {
-      "id": 2,
-      "title": "zz",
-      "content": "zzzzzzzzzzzzzzzzzz",
-      "createdAt": "2024-12-06 14:07:23",
-      "boardImg": "uploads\\boards\\1733461643519_황승수2.jpg",
-      "writerId": 1,
-      "viewCnt": 6
-    },
-    {
-      "id": 3,
-      "title": "1111111111",
-      "content": "111111111111111111111111",
-      "createdAt": "2024-12-06 14:17:31",
-      "boardImg": "uploads\\boards\\1733462251630_황승수2.jpg",
-      "writerId": 2,
-      "viewCnt": 5
-    }
-  ]
+  "data": []
 }

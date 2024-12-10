@@ -18,6 +18,7 @@ module.exports = {
 				commentId: boardComment.id,
 				content: boardComment.content,
 				createdAt: boardComment.createdAt,
+				modifiedAt: boardComment.modifiedAt,
 				writerId: user.id,
 				writerNickname: user.nickname,
 				writerProfileImg: user.profileImg
@@ -41,6 +42,7 @@ module.exports = {
 		const boardComment = {
 			commentId: comment.id,
 			createdAt: comment.createdAt,
+			modifiedAt: comment.modifiedAt,
 			content: comment.content,
 			writerId: comment.writerId,
 			writerNickname: writer.nickname,

@@ -1,5 +1,6 @@
 const process = require("process");
-const { withTransaction, checkArguments, dateTimeFormat } = require("../../utils/utils");
+const withTransaction = require("../../middlewares/transaction")
+const { checkArguments, dateTimeFormat } = require("../../utils/utils");
 const { RequestArgumentException, UserNotFoundException } = require("../../exception/CustomException");
 const { UserRole } = require("../../utils/const");
 

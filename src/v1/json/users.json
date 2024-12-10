@@ -2,21 +2,13 @@
   "data": [
     {
       "id": 1,
-      "email": "luis.hwang@gmail.com",
+      "email": "h970126@gmail.com",
       "password": "123123Aa!@",
-      "nickname": "luis.hwang",
-      "profileImg": "uploads/auth/1733192976390_황승수2.jpg",
-      "createdAt": "2024-12-03 11:30:15",
-      "lastLoginDate": null
-    },
-    {
-      "id": 2,
-      "email": "admin@gmail.com",
-      "password": "123123Aa!@",
-      "nickname": "qweqwxe",
-      "profileImg": "uploads/auth/1733462199819_황승수3.jpg",
-      "createdAt": "2024-12-06 14:16:39",
-      "lastLoginDate": null
+      "nickname": "luis.hwan",
+      "profileImg": "uploads/boards/1733832524368_ok.png",
+      "createdAt": "2024-12-10 21:08:14",
+      "modifiedAt": "2024-12-10 21:09:04",
+      "lastLoginDate": "2024-12-10 21:08:19"
     }
   ]
 }
