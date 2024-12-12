@@ -5,6 +5,7 @@ const upload = require("../../middlewares/multer");
 
 /* 로그인 요청 */
 router.post('/login', authController.authLogin);
+router.post('/logout', authController.authLogout);
 router.post('/signup', upload.single("profileImg"), authController.authSignup);
 
 module.exports = router;

@@ -6,7 +6,6 @@ const process = require("process");
 const dotenv = require("dotenv");
 dotenv.config({ path: `${process.cwd()}/src/config/.env` });
 const logger = require("./config/logger");
-
 const app = express();
 
 // CSP & 요청 최대 제한
@@ -74,14 +73,33 @@ const apiVersion = process.env.API_VERSION || "v1";
 logger.info(`Current API Version: ${apiVersion}`)
 
 if (apiVersion === "v1") {
+	/* 세션 미들웨어 추가 */
+	const session = require("express-session");
+	const SESSION_KEY = process.env.SESSION_SECRET_KEY;
+
+	app.use(session({
+		secret: SESSION_KEY,
+		resave: false,
+		saveUninitialized: false,
+		cookie: {
+			httpOnly: true,
+			secure: false,
+			sameSite: false,
+			maxAge: 1000 * 60 * 30 // ms 단위
+		}
+	}));
+
 	/* Routers */
 	const authRouter = require("./v1/routes/authRouter");
 	const boardRouter = require('./v1/routes/boardRouter');
 	const userRouter = require('./v1/routes/userRouter');
 
+	/* 라우터 등록 */
+	const authenticateSession = require('./middlewares/session');
+
 	app.use('/api/v1/auth', authRouter);
-	app.use('/api/v1/boards', boardRouter);
-	app.use('/api/v1/users', userRouter);
+	app.use('/api/v1/boards', authenticateSession, boardRouter);
+	app.use('/api/v1/users', authenticateSession, userRouter);
 }
 
 else if (apiVersion === "v2") {

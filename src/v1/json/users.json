@@ -1,4 +1,34 @@
 {
   "data": [
+    {
+      "id": 1,
+      "email": "h970126@naver.com",
+      "password": "123123Aa!@",
+      "nickname": "luis.hwang",
+      "profileImg": "uploads/auth/1733989915215_황승수.jpg",
+      "createdAt": "2024-12-12 16:51:55",
+      "modifiedAt": "2024-12-12 16:51:55",
+      "lastLoginDate": "2024-12-12 17:38:16"
+    },
+    {
+      "id": 2,
+      "email": "test@abc.com",
+      "password": "123123Aa!@",
+      "nickname": "lop",
+      "profileImg": "uploads/auth/1733993012176_황승수2.jpg",
+      "createdAt": "2024-12-12 17:43:32",
+      "modifiedAt": "2024-12-12 17:44:19",
+      "lastLoginDate": "2024-12-12 17:43:36"
+    },
+    {
+      "id": 3,
+      "email": "admin@gmail.com",
+      "password": "$2b$10$ka/ZSautbq09f7j1GjETP.2hJLV77NSFdqy9dtZkzZibOYTT8f6pa",
+      "nickname": "laasd",
+      "profileImg": "uploads/auth/1733993157932_황승수3.jpg",
+      "createdAt": "2024-12-12 17:45:57",
+      "modifiedAt": "2024-12-12 17:48:50",
+      "lastLoginDate": "2024-12-12 17:48:43"
+    }
   ]
 }
