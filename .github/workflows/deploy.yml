@@ -43,3 +43,11 @@ jobs:
           ssh -o StrictHostKeyChecking=no -i key.pem $USER@$HOST "docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GHCR_PAT }}"
           ssh -o StrictHostKeyChecking=no -i key.pem $USER@$HOST "docker pull ghcr.io/${{ github.repository_owner }}/ktb-community-be:latest"
           ssh -o StrictHostKeyChecking=no -i key.pem $USER@$HOST "docker service create -e PORT=8000 -p 8000:8000 --replicas 3 --name ktb-community-be ghcr.io/${{ github.repository_owner }}/ktb-community-be:latest"
+
+      - name: Send Discord Notification
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        run: |
+          curl -H "Content-Type: application/json" \
+               -d '{"content": "배포가 완료되었습니다."}' \
+               $DISCORD_WEBHOOK
