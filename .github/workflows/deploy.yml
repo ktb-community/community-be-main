@@ -40,5 +40,5 @@ jobs:
           
           ssh -o StrictHostKeyChecking=no -i key.pem $USER@$HOST "docker rm -f ktb-community-be:latest || true"
           ssh -o StrictHostKeyChecking=no -i key.pem $USER@$HOST "docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GHCR_PAT }}"
-          ssh -o StrictHostKeyChecking=no -i key.pem $USER@$HOST "docker pull ghcr.io/${{ github.repository.owner }}/ktb-community-be:latest"
+          ssh -o StrictHostKeyChecking=no -i key.pem $USER@$HOST "docker pull ghcr.io/${{ github.repository_owner }}/ktb-community-be:latest"
           ssh -o StrictHostKeyChecking=no -i key.pem $USER@$HOST "docker service create -e PORT=8000 -p 8000:8000 --replicas 3 --name ktb-community-be ktb-community-be:latest"
