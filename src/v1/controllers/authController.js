@@ -1,5 +1,6 @@
 const { sendJSONResponse, dateTimeFormat } = require("../../utils/utils");
 const { ResStatus } = require("../../utils/const");
+const logger = require("../../config/logger");
 const bcrypt = require("bcrypt");
 const User = require("../models/userModel");
 
@@ -22,11 +23,12 @@ module.exports = {
 
 		/* 세션에 사용자 데이터 저장 */
 		req.session.isAuthenticated = true;
-		req.session.lastActivity = dateNow;
 		req.session.user = {
 			id: user.id,
 			nickname: user.nickname,
-			role: 'user'
+			profileImg: user.profileImg,
+			role: 'user',
+			lastActivity: dateNow,
 		}
 
 		return sendJSONResponse(res, 200, ResStatus.SUCCESS, "로그인이 성공적으로 완료되었습니다.", {
@@ -41,10 +43,10 @@ module.exports = {
 	authLogout: (req, res) => {
 		req.session.destroy(err => {
 			if (err) {
-				console.error(err);
+				logger.error(err);
 				return sendJSONResponse(res, 500, ResStatus.ERROR, "로그아웃 중 오류가 발생했습니다.");
 			}
-			res.clearCookie('connect.sid'); // 세션 쿠키 제거
+			res.clearCookie('connect.sid'); // 클라이언트 쿠키 제거
 			return sendJSONResponse(res, 200, ResStatus.SUCCESS, "로그아웃이 성공적으로 완료되었습니다.");
 		})
 	},

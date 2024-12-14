@@ -11,16 +11,20 @@ const app = express();
 // CSP & 요청 최대 제한
 app.use(helmet({
 	contentSecurityPolicy: {
-		useDefaults: true,
+		useDefaults: true, // 기본 CSP 설정 사용
 		directives: {
 			"img-src": ["'self'", process.env.SERVER_URL],
 			"script-src": ["'self'", process.env.SERVER_URL]
 		}
 	},
+
+	/* 페이지가 다른 사이트에서 iframe으로 삽입되는 것 방지 (클릭재킹 공격 방지) */
 	frameguard: {
 		action: 'deny'
 	},
-	xssFilter: true,
+
+	/* X-XSS-Protection 헤더 비활성화 (최신 브라우저에서는 거의 효과가 없으며, 오히려 악용될 여지가 있음) */
+	xssFilter: false,
 }));
 
 app.use(rateLimit({
@@ -62,6 +66,8 @@ app.use(morganMiddleware);
 app.use(corsMiddleware);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// 정적파일 요청시 CORS 따로 설정
 app.use("/uploads", (req, res, next) => {
 	res.setHeader("Access-Control-Allow-Origin", 'http://localhost:5173, http://localhost:3000');
 	res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
@@ -73,10 +79,12 @@ const apiVersion = process.env.API_VERSION || "v1";
 logger.info(`Current API Version: ${apiVersion}`)
 
 if (apiVersion === "v1") {
-	/* 세션 미들웨어 추가 */
 	const session = require("express-session");
+	const store = new session.MemoryStore();
+	const process = require("process");
 	const SESSION_KEY = process.env.SESSION_SECRET_KEY;
 
+	/* 세션 미들웨어 추가 */
 	app.use(session({
 		secret: SESSION_KEY,
 		resave: false,
@@ -85,8 +93,9 @@ if (apiVersion === "v1") {
 			httpOnly: true,
 			secure: false,
 			sameSite: false,
-			maxAge: 1000 * 60 * 30 // ms 단위
-		}
+			expires: new Date(Date.now() + (1000 * 60 * 30) + (1000 * 60 * 60 * 9))
+		},
+		store: store
 	}));
 
 	/* Routers */
@@ -149,15 +158,12 @@ else if (apiVersion === "v2") {
 // 전역 예외 처리
 const { sendJSONResponse } = require("./utils/utils");
 const { ResStatus } = require("./utils/const");
+const session = require("express-session");
 
-const globalExceptionHandler = () => {
-	return function (err, req, res, next) {
-		logger.error(err.stack);
-		return sendJSONResponse(res, 500, ResStatus.ERROR, "서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
-	}
-}
-
-app.use(globalExceptionHandler())
+app.use((err, req, res, next) => {
+	logger.error(err.message);
+	return sendJSONResponse(res, 500, ResStatus.ERROR, "서버 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
+})
 // =====================================================================================================================
 
 const PORT = process.env.PORT || 8000;

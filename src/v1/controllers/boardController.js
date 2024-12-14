@@ -14,7 +14,6 @@ module.exports = {
 		const limit = req.query.limit || 10;
 		const offset = req.query.offset || 0;
 		const boards = Board.findBoards(limit, offset);
-		console.log(req.session);
 
 		if (boards === null) {
 			return sendJSONResponse(res, 400, ResStatus.ERROR, "예상치 못한 에러가 발생했습니다.");
