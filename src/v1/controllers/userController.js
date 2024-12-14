@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const process = require('process');
+const bcrypt = require('bcrypt');
 const logger = require('../../config/logger')
 const User = require('../models/userModel');
 const Board = require("../models/boardModel");
@@ -10,7 +11,7 @@ const { sendJSONResponse, dateTimeFormat } = require("../../utils/utils");
 const { ResStatus } = require("../../utils/const");
 
 module.exports = {
-	editUserInfo: async (req, res) => {
+	editUserInfo: (req, res) => {
 		const userId = parseInt(req.params.userId, 10) || null;
 		const { nickname, fileChange } = req.body;
 		const file = req.file;
@@ -51,7 +52,7 @@ module.exports = {
 		});
 	},
 
-	editUserPassword: (req, res) => {
+	editUserPassword: async (req, res) => {
 		const userId = parseInt(req.params.userId, 10) || null;
 		const { email, password } = req.body;
 
@@ -61,17 +62,13 @@ module.exports = {
 
 		const user = User.findById(userId);
 
-		if (!user.email === email) {
-			return sendJSONResponse(res, 400, ResStatus.FAIL, "검증되지 않은 요청입니다.");
-		}
-
-		if (user.password === password) {
+		if (await bcrypt.compare(password, user.password)) {
 			return sendJSONResponse(res, 400, ResStatus.SAME_PASSWORD, "동일한 비밀번호로 변경할 수 없습니다.");
 		}
 
 		const newUser = {
 			...user,
-			password,
+			password: await bcrypt.hash(password, 10),
 			modifiedAt: dateTimeFormat(new Date(Date.now())),
 		}
 
