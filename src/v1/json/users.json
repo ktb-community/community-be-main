@@ -1,4 +1,14 @@
 {
   "data": [
+    {
+      "id": 1,
+      "email": "admin@gmail.com",
+      "password": "$2b$10$fJWnhr1YOneq.8p7bYb7tuncYhmhlRPdv/LD9h2FHZH4vh/TG0pIC",
+      "nickname": "luis.hwang",
+      "profileImg": "uploads/auth/1734358475022_황승수.jpg",
+      "createdAt": "2024-12-16 23:14:35",
+      "modifiedAt": "2024-12-16 23:14:35",
+      "lastLoginDate": "2024-12-16 23:14:40"
+    }
   ]
 }

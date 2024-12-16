@@ -1,4 +1,13 @@
 {
   "data": [
+    {
+      "id": 1,
+      "title": "eqw",
+      "content": "qweqwe",
+      "createdAt": "2024-12-16 23:14:56",
+      "boardImg": "uploads\\boards\\1734358496103_황승수2.jpg",
+      "writerId": 1,
+      "viewCnt": 2
+    }
   ]
 }
