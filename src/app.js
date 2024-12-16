@@ -76,8 +76,12 @@ app.use("/uploads", (req, res, next) => {
 // ====================================================================================================================
 /* Prometheus */
 const client = require("prom-client");
+const apiMetrics = require("prometheus-api-metrics");
 const register = new client.Registry();
 
+app.use(apiMetrics());
+
+/*
 // 기본 메트릭 수집
 client.collectDefaultMetrics({ register });
 
@@ -88,6 +92,8 @@ register.registerMetric(new client.Histogram({
 	labelNames: ['method', 'route', 'status_code'],
 	buckets: [0.1, 0.5, 1, 3, 5]
 }));
+*/
+
 
 // 메트릭 엔드포인트
 app.get('/metrics', async (req, res) => {
