@@ -73,6 +73,27 @@ app.use("/uploads", (req, res, next) => {
 	res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
 	next();
 }, express.static("uploads"));
+// ====================================================================================================================
+/* Prometheus */
+const client = require("prom-client");
+const register = new client.Registry();
+
+// 기본 메트릭 수집
+client.collectDefaultMetrics({ register });
+
+// 사용자 정의 메트릭
+register.registerMetric(new client.Histogram({
+	name: 'http_request_duration_seconds',
+	help: 'HTTP 요청 처리 시간',
+	labelNames: ['method', 'route', 'status_code'],
+	buckets: [0.1, 0.5, 1, 3, 5]
+}));
+
+// 메트릭 엔드포인트
+app.get('/metrics', async (req, res) => {
+	res.setHeader('Content-Type', register.contentType);
+	res.end(await register.metrics());
+});
 
 // ===================================== [라우터 등록] ======================================================
 const apiVersion = process.env.API_VERSION || "v1";
@@ -158,7 +179,6 @@ else if (apiVersion === "v2") {
 // 전역 예외 처리
 const { sendJSONResponse } = require("./utils/utils");
 const { ResStatus } = require("./utils/const");
-const session = require("express-session");
 
 app.use((err, req, res, next) => {
 	logger.error(err.message);
