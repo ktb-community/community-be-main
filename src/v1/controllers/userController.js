@@ -76,7 +76,7 @@ module.exports = {
 		return sendJSONResponse(res, 200, ResStatus.SUCCESS, null);
 	},
 
-	deleteUser: (req, res) => {
+	deleteUser: async (req, res) => {
 		const userId = parseInt(req.params.userId, 10) || null;
 		const { password } = req.body;
 
@@ -90,7 +90,7 @@ module.exports = {
 			return sendJSONResponse(res, 400, ResStatus.FAIL, "유효하지 않은 요청입니다.");
 		}
 
-		if (user.password !== password) {
+		if (!await bcrypt.compare(password, user.password)) {
 			return sendJSONResponse(res, 400, ResStatus.PASSWORD_NOT_MATCH, "비밀번호가 일치하지 않습니다.");
 		}
 
