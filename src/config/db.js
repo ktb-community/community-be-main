@@ -11,7 +11,7 @@ const pool = mysql.createPool({
 	database: process.env.DB_NAME,
 	waitForConnections: true,
 	connectionLimit: 10,
-	queueLimit: 0,
+	queueLimit: 0
 });
 
 // Promise 기반 사용을 위한 `promise()` 호출
@@ -20,11 +20,11 @@ const db = pool.promise();
 // 초기 연결 테스트
 db.getConnection()
 	.then(conn => {
-		logger.info(`Successfully Connected to DB: ${process.env.DB_NAME}@${process.env.DB_HOST}:${process.env.DB_PORT} with ${process.env.DB_USER}`);
 		conn.release();
+		logger.info(`Successfully Connected to DB: ${process.env.DB_NAME}@${process.env.DB_HOST}:${process.env.DB_PORT} with ${process.env.DB_USER}`);
 	})
 	.catch(err => {
-		logger.error("Connection Error: ", err.message);
+		logger.error("Connection Error: ", err);
 		process.exit(1);
 	})
 

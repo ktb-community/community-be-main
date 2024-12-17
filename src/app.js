@@ -36,6 +36,7 @@ app.use(rateLimit({
 /* IMPORT CUSTOM MIDDLEWARES */
 const morganMiddleware = require("./middlewares/morgan");
 const corsMiddleware = require("./middlewares/cors");
+const StringUtil = require("./utils/stringUtil");
 
 /* MIDDLEWARES */
 app.use(morganMiddleware);
@@ -45,7 +46,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // 정적파일 요청시 CORS 따로 설정
 app.use("/uploads", (req, res, next) => {
-	res.setHeader("Access-Control-Allow-Origin", csvToStrArray(process.env.ACCESS_CONTROL_ALLOW_ORIGIN));
+	res.setHeader("Access-Control-Allow-Origin", StringUtil.csvToStrArray(process.env.ACCESS_CONTROL_ALLOW_ORIGIN));
 	res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
 	next();
 }, express.static("uploads"));
@@ -84,9 +85,9 @@ app.use(session({
 }));
 
 /* Routers */
-const authRouter = require("./v1/routes/authRouter");
-const boardRouter = require("./v1/routes/boardRouter");
-const userRouter = require("./v1/routes/userRouter");
+const authRouter = require("./routes/authRouter");
+const boardRouter = require("./routes/boardRouter");
+const userRouter = require("./routes/userRouter");
 
 /* 라우터 등록 */
 const authenticateSession = require("./middlewares/session");
@@ -95,51 +96,9 @@ app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/boards", authenticateSession, boardRouter);
 app.use("/api/v1/users", authenticateSession, userRouter);
 
-/*
-// 애플리케이션 초기화 단계에서 의존성 주입 -> TODO: 추후 DI 프레임워크 도입 또는 fs 모듈로 자동화시키기
-
-// Model
-const User = require("./v2/models/user");
-const Board = require("./v2/models/board");
-const BoardLike = require("./v2/models/boardLike");
-const BoardComment = require("./v2/models/boardComment");
-
-const userModel = new User();
-const boardModel = new Board();
-const boardLikeModel = new BoardLike();
-const boardCommentModel = new BoardComment();
-
-// Service
-const UserService = require("./v2/services/userService");
-const BoardService = require("./v2/services/boardService");
-const AuthService = require("./v2/services/authService");
-const BoardCommentService = require("./v2/services/boardCommentService");
-const BoardLikeService = require("./v2/services/boardLikeService");
-
-const userService = new UserService(userModel);
-const authService = new AuthService(userModel);
-const boardService = new BoardService(boardModel, userModel);
-const boardCommentService = new BoardCommentService(boardCommentModel);
-const boardLikeService = new BoardLikeService(boardLikeModel);
-
-// Router
-const UserRouter = require("./v2/routes/userRouter");
-const AuthRouter = require("./v2/routes/authRouter");
-const BoardRouter = require("./v2/routes/boardRouter");
-
-const userRouter = new UserRouter(userService);
-const authRouter = new AuthRouter(authService);
-const boardRouter = new BoardRouter(boardService, boardLikeService, boardCommentService);
-
-// 라우터 등록
-app.use(`/api/v2/users`, userRouter.router);
-app.use(`/api/v2/auth`, authRouter.router);
-app.use(`/api/v2/boards`, boardRouter.router);
-*/
-
 // ========================================= [500 에러 핸들링] ==========================================================
 // 전역 예외 처리
-const { sendJSONResponse, csvToStrArray } = require("./utils/utils");
+const { sendJSONResponse } = require("./utils/utils");
 const { ResStatus } = require("./utils/const");
 
 app.use((err, req, res, _) => {

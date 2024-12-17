@@ -2,13 +2,14 @@
 const dotenv = require("dotenv");
 const fs = require("fs");
 const process = require("process");
+const logger = require("./logger");
 const ENV = process.env.NODE_ENV || "development";
 const envFile = `.env.${ENV}`;
 
 try {
 	dotenv.config({ path: `${process.cwd()}/src/config/${envFile}` });
 } catch (err) {
-	console.error(`[dotenv] ${err.message}`);
+	logger.error(`[dotenv] ${err.message}`);
 }
 
 /* 필수 폴더 생성 */
@@ -28,3 +29,7 @@ for (const dir of logDir) {
 		fs.mkdirSync(dir);
 	}
 }
+
+/* DB 연결 테스트 */
+require("./db");
+require('./redis')

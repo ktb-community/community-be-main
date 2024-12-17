@@ -20,13 +20,7 @@ const UserRole = Object.freeze({
 	USER: "USER"
 })
 
-const JWTExpire = Object.freeze({
-	ACCESS_TOKEN: 1800,
-	REFRESH_TOKEN: 3600
-})
-
 module.exports = {
 	ResStatus,
-	UserRole,
-	JWTExpire
+	UserRole
 };

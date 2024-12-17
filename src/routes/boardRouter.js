@@ -1,5 +1,5 @@
 const express = require('express');
-const upload = require("../../middlewares/multer");
+const upload = require("../middlewares/multer");
 
 const router = express.Router();
 const boardController = require('../controllers/boardController');
