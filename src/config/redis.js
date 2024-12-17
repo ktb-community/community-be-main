@@ -12,5 +12,4 @@ try {
 	process.exit(1);
 }
 
-module.exports = new RedisStore({ client: redisClient });
-
+module.exports = new RedisStore({ client: redisClient, ttl: 60 * 30 * 1000 });

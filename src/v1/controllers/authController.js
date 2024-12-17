@@ -28,7 +28,6 @@ module.exports = {
 			nickname: user.nickname,
 			profileImg: user.profileImg,
 			role: 'user',
-			lastActivity: dateNow,
 		}
 
 		return sendJSONResponse(res, 200, ResStatus.SUCCESS, "로그인이 성공적으로 완료되었습니다.", {
@@ -36,7 +35,7 @@ module.exports = {
 			email: user.email,
 			nickname: user.nickname,
 			profile: user.profileImg,
-			lastLoginDate: dateTimeFormat(new Date(Date.now())),
+			lastLoginDate: dateNow
 		});
 	},
 

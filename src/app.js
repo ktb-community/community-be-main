@@ -45,7 +45,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // 정적파일 요청시 CORS 따로 설정
 app.use("/uploads", (req, res, next) => {
-	res.setHeader("Access-Control-Allow-Origin", "http://localhost:5173, http://localhost:3000");
+	res.setHeader("Access-Control-Allow-Origin", csvToStrArray(process.env.ACCESS_CONTROL_ALLOW_ORIGIN));
 	res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
 	next();
 }, express.static("uploads"));
@@ -78,7 +78,7 @@ app.use(session({
 		httpOnly: true,
 		secure: false,
 		sameSite: false,
-		expires: new Date(Date.now() + (1000 * 60 * 30) + (1000 * 60 * 60 * 9)),
+		maxAge: 1000 * 60 * 30,
 	},
 	store: redisStore,
 }));
@@ -139,7 +139,7 @@ app.use(`/api/v2/boards`, boardRouter.router);
 
 // ========================================= [500 에러 핸들링] ==========================================================
 // 전역 예외 처리
-const { sendJSONResponse } = require("./utils/utils");
+const { sendJSONResponse, csvToStrArray } = require("./utils/utils");
 const { ResStatus } = require("./utils/const");
 
 app.use((err, req, res, _) => {
