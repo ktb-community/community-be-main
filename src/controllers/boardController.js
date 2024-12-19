@@ -14,9 +14,7 @@ class BoardController {
 		return await withTransaction(async conn => {
 			const limit = req.query.limit || 10;
 			const offset = req.query.offset || 0;
-			const boards = await Board.findBoards(conn, { limit, offset });
-
-			return sendJSONResponse(res, 200, ResStatus.SUCCESS, null, boards.map(board => ({
+			const boards = (await Board.findBoards(conn, { limit, offset })).map(board => ({
 				boardId: board.id,
 				title: board.title,
 				createdAt: StringUtil.dateTimeFormat(new Date(board.createdAt)),
@@ -25,7 +23,12 @@ class BoardController {
 				commentCnt: board.comments,
 				writerNickname: board.nickname,
 				writerProfileImg: board.profileImg,
-			})));
+			}));
+
+			return sendJSONResponse(res, 200, ResStatus.SUCCESS, null, boards, {
+				hasMore: boards.length === parseInt(limit),
+				nextCursor: parseInt(offset) + 10
+			});
 		});
 	}
 
@@ -135,7 +138,7 @@ class BoardController {
 			const modifiedBoard = {
 				...board,
 				title,
-				content: RequestValidator.escapeXSS(content),
+				content: content,
 				boardImg: file.path.replace(/\\/g, "/"),
 			};
 
