@@ -22,7 +22,7 @@ jobs:
 
       - name: Build and Push Docker Image
         run: |
-          docker buildx build --platform linux/amd64 -t ghcr.io/${{ github.repository_owner }}/ktb-community-be:latest --push .
+          docker buildx build --platform linux/amd64 -t ghcr.io/ktb-community/ktb-community-be:latest --push .
 
   deploy:
     needs: [build-and-push]
@@ -40,8 +40,8 @@ jobs:
           
           ssh -o StrictHostKeyChecking=no -i key.pem $USER@$HOST "docker service rm ktb-community-be || true"
           ssh -o StrictHostKeyChecking=no -i key.pem $USER@$HOST "docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GHCR_PAT }}"
-          ssh -o StrictHostKeyChecking=no -i key.pem $USER@$HOST "docker pull ghcr.io/${{ github.repository_owner }}/ktb-community-be:latest"
-          ssh -o StrictHostKeyChecking=no -i key.pem $USER@$HOST "docker service create -e PORT=8000 -p 8000:8000 --replicas 3 --name ktb-community-be ghcr.io/${{ github.repository_owner }}/ktb-community-be:latest"
+          ssh -o StrictHostKeyChecking=no -i key.pem $USER@$HOST "docker pull ghcr.io/ktb-community/ktb-community-be:latest"
+          ssh -o StrictHostKeyChecking=no -i key.pem $USER@$HOST "docker service create -e PORT=8000 -p 8000:8000 --replicas 3 --name ktb-community-be ghcr.io/ktb-community/ktb-community-be:latest"
           ssh -o StrictHostKeyChecking=no -i key.pem $USER@$HOST "docker service update --network-add community-monitoring_monitoring ktb-community-be"
 
   notify:

@@ -1,13 +1,13 @@
 {
 	"name": "community-be",
 	"version": "1.0.0",
-	"main": "index.js",
+	"main": "app.js",
 	"scripts": {
 		"dev": "cross-env NODE_ENV=development node ./src/app.js",
 		"prod": "cross-env NODE_ENV=production node ./src/app.js",
 		"build": "npx webpack"
 	},
-	"author": "",
+	"author": "luis.hwang",
 	"license": "ISC",
 	"description": "",
 	"dependencies": {
