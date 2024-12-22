@@ -13,7 +13,7 @@ class BoardCommentController {
 			const limit = req.query.limit || 10;
 			const offset = req.query.offset || 0;
 
-			if (!RequestValidator.checkArguments(boardId)) {
+			if (!RequestValidator.checkArguments(boardId, limit, offset)) {
 				return sendJSONResponse(res, 400, ResStatus.FAIL, "유효하지 않은 요청값입니다.");
 			}
 

@@ -35,21 +35,12 @@ app.use(rateLimit({
 // ====================================================================================================================
 /* IMPORT CUSTOM MIDDLEWARES */
 const morganMiddleware = require("./middlewares/morgan");
-const corsMiddleware = require("./middlewares/cors");
-const StringUtil = require("./utils/stringUtil");
 
 /* MIDDLEWARES */
 app.use(morganMiddleware);
-app.use(corsMiddleware);
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-// 정적파일 요청시 CORS 따로 설정
-app.use("/uploads", (req, res, next) => {
-	res.setHeader("Access-Control-Allow-Origin", StringUtil.csvToStrArray(process.env.ACCESS_CONTROL_ALLOW_ORIGIN));
-	res.setHeader("Cross-Origin-Resource-Policy", "cross-origin");
-	next();
-}, express.static("uploads"));
+app.use("/uploads", express.static("uploads"));
 
 // ====================================================================================================================
 /* Prometheus */
