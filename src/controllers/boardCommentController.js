@@ -10,8 +10,10 @@ class BoardCommentController {
 	static async getBoardComments(req, res) {
 		return await withTransaction(async conn => {
 			const boardId = parseInt(req.params.boardId, 10) || null;
+			const limit = req.query.limit || 10;
+			const offset = req.query.offset || 0;
 
-			if (!RequestValidator.checkArguments(boardId)) {
+			if (!RequestValidator.checkArguments(boardId, limit, offset)) {
 				return sendJSONResponse(res, 400, ResStatus.FAIL, "유효하지 않은 요청값입니다.");
 			}
 
@@ -25,7 +27,10 @@ class BoardCommentController {
 				writerProfileImg: boardComment.profileImg
 			}))
 
-			return sendJSONResponse(res, 200, ResStatus.SUCCESS, null, boardComments);
+			return sendJSONResponse(res, 200, ResStatus.SUCCESS, null, boardComments, {
+				hasMore: boardComments.length === parseInt(limit),
+				nextCursor: parseInt(offset) + 10
+			});
 		})
 	}
 

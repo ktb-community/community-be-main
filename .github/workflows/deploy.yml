@@ -38,7 +38,6 @@ jobs:
           HOST=${{ secrets.EC2_HOST }}
           USER=${{ secrets.EC2_USER }}
           
-          ssh -o StrictHostKeyChecking=no -i key.pem $USER@$HOST "docker rm -f ktb-community-be:latest || true"
           ssh -o StrictHostKeyChecking=no -i key.pem $USER@$HOST "docker service rm ktb-community-be || true"
           ssh -o StrictHostKeyChecking=no -i key.pem $USER@$HOST "docker login ghcr.io -u ${{ github.actor }} -p ${{ secrets.GHCR_PAT }}"
           ssh -o StrictHostKeyChecking=no -i key.pem $USER@$HOST "docker pull ghcr.io/${{ github.repository_owner }}/ktb-community-be:latest"
@@ -54,5 +53,5 @@ jobs:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         run: |
           curl -H "Content-Type: application/json" \
-               -d '{"content": "배포가 완료되었습니다."}' \
+               -d '{"content": "[BE] 배포가 완료되었습니다."}' \
                $DISCORD_WEBHOOK
