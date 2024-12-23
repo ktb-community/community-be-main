@@ -1,6 +1,8 @@
 const bcrypt = require("bcrypt");
+const fs = require("fs");
 const User = require("../models/userModel");
 const withTranslation = require("../middlewares/transaction");
+const StorageClient = require("../clients/storageClient");
 const RequestValidator = require("../utils/requestValidator");
 const StringUtil = require("../utils/stringUtil");
 const { sendJSONResponse } = require("../utils/utils");
@@ -28,17 +30,31 @@ class AuthController {
 				return sendJSONResponse(res, 400, ResStatus.NICKNAME_DUPLICATED, "이미 사용중인 닉네임입니다.");
 			}
 
-			/* id, createdAt, modifiedAt, role 자동생성 */
-			const user = {
-				email,
-				password: await bcrypt.hash(password, 10),
-				nickname,
-				profileImg: file.path.replace(/\\/g, "/"),
-				lastLoginDate: null,
-			};
+			try {
+				const data = await StorageClient.upload(file.path, file.originalname);
 
-			await User.save(conn, { user });
-			return sendJSONResponse(res, 201, ResStatus.SUCCESS, "회원가입이 성공적으로 완료되었습니다.");
+				/* id, createdAt, modifiedAt, role 자동생성 */
+				const user = {
+					email,
+					password: await bcrypt.hash(password, 10),
+					nickname,
+					profileImg: data.key,
+					lastLoginDate: null,
+				};
+
+				await User.save(conn, { user });
+
+				return sendJSONResponse(res, 201, ResStatus.SUCCESS, "회원가입이 성공적으로 완료되었습니다.");
+			} catch (err) {
+				console.error(err);
+				return sendJSONResponse(res, 400, ResStatus.FAIL, null);
+			} finally {
+				// 임시 저장 파일 삭제
+				fs.rm(file.path, (err) => {
+					if (err) console.error(err);
+					console.log(`${file.path} 제거`);
+				});
+			}
 		});
 	}
 

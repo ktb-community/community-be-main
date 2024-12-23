@@ -1,7 +1,5 @@
 const fs = require("fs");
-const path = require("path");
-const process = require("process");
-const logger = require("../config/logger");
+const StorageClient = require("../clients/storageClient");
 const RequestValidator = require("../utils/requestValidator");
 const StringUtil = require("../utils/stringUtil");
 const Board = require("../models/boardModel");
@@ -96,16 +94,29 @@ class BoardController {
 				return sendJSONResponse(res, 400, ResStatus.FAIL, "게시글 제목 길이가 적절하지 않습니다.");
 			}
 
-			/* createdAt, modifiedAt, views은 기본값 사용 */
-			const board = {
-				title,
-				content,
-				boardImg: file.path,
-				writerId: userId,
-			};
+			try {
+				const data = await StorageClient.upload(file.path, file.originalname)
 
-			await Board.save(conn, { board });
-			return sendJSONResponse(res, 201, ResStatus.SUCCESS, null);
+				/* createdAt, modifiedAt, views은 기본값 사용 */
+				const board = {
+					title,
+					content,
+					boardImg: data.key,
+					writerId: userId,
+				};
+
+				await Board.save(conn, { board });
+
+				return sendJSONResponse(res, 201, ResStatus.SUCCESS, null);
+			} catch (err) {
+				console.error(err);
+				return sendJSONResponse(res, 400, ResStatus.FAIL, null);
+			} finally {
+				fs.rm(file.path, (err) => {
+					if (err) console.error(err);
+					console.log(`${file.path} 제거`);
+				});
+			}
 		});
 	}
 
@@ -130,21 +141,29 @@ class BoardController {
 				return sendJSONResponse(res, 400, ResStatus.ERROR, "예상치 못한 에러가 발생했습니다.");
 			}
 
-			// 기존 이미지 삭제
-			const imgPath = path.join(process.cwd(), board.boardImg);
-			fs.unlink(imgPath, () => logger.info(`${imgPath} 제거`));
+			try {
+				const data = await StorageClient.upload(file.path, file.originalname);
 
-			// board 수정
-			const modifiedBoard = {
-				...board,
-				title,
-				content: content,
-				boardImg: file.path.replace(/\\/g, "/"),
-			};
+				// board 수정
+				const modifiedBoard = {
+					...board,
+					title,
+					content: content,
+					boardImg: data.key,
+				};
 
-			await Board.updateBoard(conn, { board: modifiedBoard });
+				await Board.updateBoard(conn, { board: modifiedBoard });
 
-			return sendJSONResponse(res, 200, ResStatus.SUCCESS, null);
+				return sendJSONResponse(res, 200, ResStatus.SUCCESS, null);
+			} catch (err) {
+				console.error(err);
+				return sendJSONResponse(res, 400, ResStatus.FAIL, null);
+			} finally {
+				fs.rm(file.path, (err) => {
+					if (err) console.error(err);
+					console.log(`${file.path} 제거`);
+				});
+			}
 		});
 	}
 
@@ -162,10 +181,6 @@ class BoardController {
 			if (!board || board.writerId !== userId) {
 				return sendJSONResponse(res, 400, ResStatus.ERROR, "예상치 못한 에러가 발생했습니다.");
 			}
-
-			// Board 이미지 삭제
-			const imgPath = path.join(process.cwd(), board.boardImg);
-			fs.unlink(imgPath, () => logger.info(`${imgPath} 제거`));
 
 			// 삭제시 COMMENT, LIKE 캐스케이딩 삭제
 			await Board.deleteById(conn, { id: boardId });
