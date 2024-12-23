@@ -6,8 +6,6 @@ const rateLimit = require("express-rate-limit");
 const process = require("process");
 const logger = require("./config/logger");
 const app = express();
-const cors = require("cors");
-app.use(cors())
 
 // CSP & 요청 최대 제한
 app.use(helmet({

@@ -5,3 +5,5 @@ schema/
 eslint.config.mjs
 .prettierrc.json
 .gitignore
+.env.development
+.env.production

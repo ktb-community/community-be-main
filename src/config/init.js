@@ -7,7 +7,7 @@ const ENV = process.env.NODE_ENV || "development";
 const envFile = `.env.${ENV}`;
 
 try {
-	dotenv.config({ path: `${process.cwd()}/src/config/${envFile}` });
+	dotenv.config({ path: `${envFile}` });
 } catch (err) {
 	logger.error(`[dotenv] ${err.message}`);
 }
