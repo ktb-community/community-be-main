@@ -27,12 +27,15 @@ app.use(helmet({
 }));
 
 // express-rate-limit이 프록시 서버의 IP가 아닌 X-Forwarded-For을 참고하도록 설정
-app.set('trust proxy', true);
+app.set('trust proxy', process.env.TRUST_PROXY_URL);
 
 app.use(rateLimit({
 	windowMs: 1000,
 	max: 100,
 	message: "최대 요청에 도달했습니다. 잠시 후 다시 시도해주세요.",
+	keyGenerator: (req) => {
+		return req.header['X-Forwarded-For'] || req.ip;
+	}
 }));
 
 // ====================================================================================================================
