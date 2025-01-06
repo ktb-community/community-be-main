@@ -102,5 +102,5 @@ const PORT = process.env.PORT || 8000;
 
 app.listen(PORT, () => {
 	logger.info(`Node ENV: ${process.env.NODE_ENV}`);
-	logger.info(`Server started at http://localhost:${PORT}`);
+	logger.info(`Server started at PORT ${PORT}`);
 });
