@@ -1,6 +1,7 @@
 node_modules
 logs
 uploads
+schema
 .idea
 .env.development
 .env.production
