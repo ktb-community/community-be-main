@@ -18,7 +18,7 @@ class BoardLikeController {
 			if (boardLike) await BoardLike.deleteByBoardIdAndUserId(conn, { boardId, userId });
 			else await BoardLike.save(conn, { boardId, userId });
 
-			return sendJSONResponse(res, 200, ResStatus.SUCCESS, null, !(boardLike === null));
+			return sendJSONResponse(res, 200, ResStatus.SUCCESS, null, !boardLike);
 		})
 	}
 
@@ -33,7 +33,7 @@ class BoardLikeController {
 
 			const boardLike = await BoardLike.findByBoardIdAndUserId(conn, { boardId, userId });
 
-			return sendJSONResponse(res, 200, ResStatus.SUCCESS, null, boardLike !== null);
+			return sendJSONResponse(res, 200, ResStatus.SUCCESS, null, !!boardLike);
 		})
 	}
 }

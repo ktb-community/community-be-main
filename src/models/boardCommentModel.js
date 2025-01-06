@@ -37,7 +37,7 @@ class BoardComment {
 			INNER JOIN USERS U
 			ON BC.writerId = U.id
 			WHERE BC.boardId = ?
-			ORDER BY BC.createdAt ASC
+			ORDER BY BC.createdAt DESC
 		`;
 
 		const [boardComments] = await conn.execute(query, [id]);
