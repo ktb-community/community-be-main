@@ -10,7 +10,6 @@ class BoardComment {
 			SELECT
 				BC.id,
 				BC.createdAt,
-				BC.modifiedAt,
 				BC.comment AS content,
 				U.id AS writerId,
 				U.nickname,

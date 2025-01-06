@@ -64,7 +64,6 @@ class BoardCommentController {
 			return sendJSONResponse(res, 200, ResStatus.SUCCESS, '댓글이 정상적으로 등록되었습니다.', {
 				commentId: boardComment.id,
 				createdAt: StringUtil.dateTimeFormat(new Date(boardComment.createdAt)),
-				modifiedAt: StringUtil.dateTimeFormat(new Date(boardComment.modifiedAt)),
 				content: boardComment.content,
 				writerId: boardComment.writerId,
 				writerNickname: boardComment.nickname,
