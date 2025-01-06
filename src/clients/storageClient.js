@@ -1,7 +1,8 @@
 const axios = require('axios');
 const { HttpStatusCode } = require("axios");
 const FormData = require("form-data");
-const fs = require("node:fs");
+const fs = require("fs");
+const process = require("process");
 
 class StorageClient {
 	static async upload(path, originalFilename) {
