@@ -31,7 +31,6 @@ class BoardComment {
 				BC.id AS commentId,
 				BC.comment AS content,
 				BC.createdAt,
-				BC.modifiedAt,
 				U.id AS writerId,
 				U.nickname,
 				U.profileImg

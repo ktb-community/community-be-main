@@ -21,7 +21,6 @@ class BoardCommentController {
 				commentId: boardComment.commentId,
 				content: boardComment.content,
 				createdAt: StringUtil.dateTimeFormat(new Date(boardComment.createdAt)),
-				modifiedAt: StringUtil.dateTimeFormat(new Date(boardComment.modifiedAt)),
 				writerId: boardComment.writerId,
 				writerNickname: boardComment.nickname,
 				writerProfileImg: boardComment.profileImg
