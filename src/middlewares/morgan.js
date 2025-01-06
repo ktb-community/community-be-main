@@ -17,13 +17,4 @@ const stream = {
 	},
 };
 
-// 로깅 스킵 여부
-// 배포 환경에서 상태코드 400 이하는 로그 기록 X
-const skip = (_, res) => {
-	if (process.env.NODE_ENV === "production") {
-		return res.statusCode && res.statusCode < 400;
-	}
-	return false;
-};
-
-module.exports = morgan(format, { stream, skip });
+module.exports = morgan(format, { stream });

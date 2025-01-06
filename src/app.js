@@ -26,9 +26,12 @@ app.use(helmet({
 	xssFilter: false,
 }));
 
+// express-rate-limit이 프록시 서버의 IP가 아닌 X-Forwarded-For을 참고하도록 설정
+app.set('trust proxy', true);
+
 app.use(rateLimit({
 	windowMs: 1000,
-	max: 30,
+	max: 100,
 	message: "최대 요청에 도달했습니다. 잠시 후 다시 시도해주세요.",
 }));
 
@@ -102,5 +105,6 @@ const PORT = process.env.PORT || 8000;
 
 app.listen(PORT, () => {
 	logger.info(`Node ENV: ${process.env.NODE_ENV}`);
+	logger.info(`Storage Server URL: ${process.env.STORAGE_SERVER_URL}`);
 	logger.info(`Server started at PORT ${PORT}`);
 });
