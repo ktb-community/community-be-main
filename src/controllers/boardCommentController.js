@@ -10,8 +10,8 @@ class BoardCommentController {
 	static async getBoardComments(req, res) {
 		return await withTransaction(async conn => {
 			const boardId = parseInt(req.params.boardId, 10) || null;
-			const limit = req.query.limit || 10;
-			const offset = req.query.offset || 0;
+			const limit = parseInt(req.query.limit) || 10;
+			const offset = parseInt(req.query.offset) || 0;
 
 			if (!RequestValidator.checkArguments(boardId, limit, offset)) {
 				return sendJSONResponse(res, 400, ResStatus.FAIL, "유효하지 않은 요청값입니다.");
@@ -27,8 +27,8 @@ class BoardCommentController {
 			}))
 
 			return sendJSONResponse(res, 200, ResStatus.SUCCESS, null, boardComments, {
-				hasMore: boardComments.length === parseInt(limit),
-				nextCursor: parseInt(offset) + 10
+				hasMore: boardComments.length === limit,
+				nextCursor: offset + 10
 			});
 		})
 	}
@@ -61,7 +61,7 @@ class BoardCommentController {
 				return sendJSONResponse(res, 400, ResStatus.ERROR, "예상치 못한 에러가 발생했습니다.");
 			}
 
-			return sendJSONResponse(res, 200, ResStatus.SUCCESS, '댓글이 정상적으로 등록되었습니다.', {
+			return sendJSONResponse(res, 201, ResStatus.SUCCESS, '댓글이 정상적으로 등록되었습니다.', {
 				commentId: boardComment.id,
 				createdAt: StringUtil.dateTimeFormat(new Date(boardComment.createdAt)),
 				content: boardComment.content,
