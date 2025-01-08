@@ -10,8 +10,9 @@ const { ResStatus } = require("../utils/const");
 class BoardController {
 	static async getBoardList(req, res) {
 		return await withTransaction(async conn => {
-			const limit = req.query.limit || 10;
-			const offset = req.query.offset || 0;
+			const limit = parseInt(req.query.limit) || 10;
+			const offset = parseInt(req.query.offset) || 0;
+
 			const boards = (await Board.findBoards(conn, { limit, offset })).map(board => ({
 				boardId: board.id,
 				title: board.title,
@@ -24,8 +25,8 @@ class BoardController {
 			}));
 
 			return sendJSONResponse(res, 200, ResStatus.SUCCESS, null, boards, {
-				hasMore: boards.length === parseInt(limit),
-				nextCursor: parseInt(offset) + 10
+				hasMore: boards.length === limit,
+				nextCursor: offset + 10
 			});
 		});
 	}

@@ -22,7 +22,7 @@ class UserController {
 			const user = await User.findById(conn, { id: userId });
 
 			if (!user) {
-				return sendJSONResponse(res, 400, ResStatus.ERROR, "예상치 못한 에러가 발생했습니다.");
+				return sendJSONResponse(res, 400, ResStatus.ERROR, `id(${userId})에 해당하는 유저가 없습니다.`);
 			}
 
 			try {

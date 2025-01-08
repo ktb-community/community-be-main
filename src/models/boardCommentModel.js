@@ -38,10 +38,10 @@ class BoardComment {
 			ON BC.writerId = U.id
 			WHERE BC.boardId = ?
 			ORDER BY BC.createdAt DESC
-			LIMIT = ? OFFSET = ?
+			LIMIT ? OFFSET ?
 		`;
 
-		const [boardComments] = await conn.execute(query, [id, limit, offset]);
+		const [boardComments] = await conn.execute(query, [id, limit.toString(), offset.toString()]);
 		return boardComments;
 	}
 

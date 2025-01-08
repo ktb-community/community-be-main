@@ -17,7 +17,7 @@ class Board {
 			LIMIT ? OFFSET ?
 		`;
 
-		const [boards] = await conn.execute(query, [limit, offset]);
+		const [boards] = await conn.execute(query, [limit.toString(), offset.toString()]);
 		return boards;
 	}
 
