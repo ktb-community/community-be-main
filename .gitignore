@@ -5,3 +5,5 @@ schema
 .idea
 .env.development
 .env.production
+# Sentry Config File
+.sentryclirc

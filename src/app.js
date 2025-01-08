@@ -1,3 +1,4 @@
+require("./config/sentry");
 require("./config/init");
 
 const express = require("express");
@@ -5,6 +6,8 @@ const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 const process = require("process");
 const logger = require("./config/logger");
+const Sentry = require("@sentry/node");
+
 const app = express();
 
 // CSP & 요청 최대 제한
@@ -94,6 +97,9 @@ app.use("/api/v1/boards", authenticateSession, boardRouter);
 app.use("/api/v1/users", authenticateSession, userRouter);
 
 // ========================================= [500 에러 핸들링] ==========================================================
+// Sentry
+Sentry.setupExpressErrorHandler(app);
+
 // 전역 예외 처리
 const { sendJSONResponse } = require("./utils/utils");
 const { ResStatus } = require("./utils/const");

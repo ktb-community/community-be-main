@@ -76,6 +76,10 @@ class UserController {
 				return sendJSONResponse(res, 400, ResStatus.FAIL, "유효하지 않은 요청입니다.");
 			}
 
+			if (!RequestValidator.checkNickname(nickname)) {
+				return sendJSONResponse(res, 400, ResStatus.FAIL, "유효하지 않은 닉네임입니다.");
+			}
+
 			const user = await User.findById(conn, { id: userId });
 
 			if (!user) {
@@ -100,6 +104,10 @@ class UserController {
 
 			if (!RequestValidator.checkArguments(userId, email, password)) {
 				return sendJSONResponse(res, 400, ResStatus.FAIL, "유효하지 않은 요청입니다.");
+			}
+
+			if (!RequestValidator.checkPassword(password)) {
+				return sendJSONResponse(res, 400, ResStatus.FAIL, "유효하지 않은 비밀번호입니다.");
 			}
 
 			const user = await User.findById(conn, { id: userId });
