@@ -13,9 +13,8 @@ class UserController {
 		return await withTransaction(async conn => {
 			const userId = parseInt(req.params.userId, 10) || null;
 			const { nickname, fileChange } = req.body;
-			const file = req.file;
 
-			if (!RequestValidator.checkArguments(userId, nickname)) {
+			if (!RequestValidator.checkArguments(userId, nickname, fileChange)) {
 				return sendJSONResponse(res, 400, ResStatus.FAIL, "유효하지 않은 요청입니다.");
 			}
 
@@ -25,18 +24,29 @@ class UserController {
 				return sendJSONResponse(res, 400, ResStatus.ERROR, `id(${userId})에 해당하는 유저가 없습니다.`);
 			}
 
+			if (user.nickname === nickname) {
+				return sendJSONResponse(res, 400, ResStatus.NICKNAME_DUPLICATED, "이미 사용중인 닉네임입니다.");
+			}
+
 			try {
 				const changed = fileChange === "true";
 				const editUser = { ...user, nickname };
 
-				// 파일 변경이 있다면 스토리지 서버에 새 파일을 업로드
 				if (changed) {
+					const file = req.file;
 					const { key } = await StorageClient.upload(file.path, file.originalname);
 					editUser.profileImg = key;
+
+					// 업로드 후 임시 파일 삭제
+					fs.rm(file.path, (err) => {
+						if (err) console.error(err);
+						console.log(`${file.path} 제거`);
+					});
 				} else {
 					editUser.profileImg = user.profileImg;
 				}
 
+				// 사용자 정보 업데이트
 				await User.updateUser(conn, { user: editUser });
 
 				return sendJSONResponse(res, 200, ResStatus.SUCCESS, null, {
@@ -47,13 +57,8 @@ class UserController {
 					lastLoginDate: StringUtil.dateTimeFormat(new Date(editUser.lastLoginDate)),
 				});
 			} catch (err) {
-				console.error(err);
-				return sendJSONResponse(res, 400, ResStatus.FAIL, null);
-			} finally {
-				fs.rm(file.path, (err) => {
-					if (err) console.error(err);
-					console.log(`${file.path} 제거`);
-				});
+				console.error(err.message);
+				return sendJSONResponse(res, 400, ResStatus.FAIL, "처리 중 오류가 발생했습니다.");
 			}
 		});
 	}
@@ -70,7 +75,7 @@ class UserController {
 			const user = await User.findById(conn, { id: userId });
 
 			if (!user || user.email !== email) {
-				return sendJSONResponse(res, 400, ResStatus.ERROR, "예상치 못한 에러가 발생했습니다.");
+				return sendJSONResponse(res, 400, ResStatus.ERROR, "회원 정보가 일치하지 않습니다.");
 			}
 
 			if (await bcrypt.compare(password, user.password)) {
@@ -100,7 +105,7 @@ class UserController {
 			const user = await User.findById(conn, { id: userId });
 
 			if (!user) {
-				return sendJSONResponse(res, 400, ResStatus.ERROR, "예상치 못한 에러가 발생했습니다.");
+				return sendJSONResponse(res, 400, ResStatus.ERROR, `id(${userId})에 해당하는 유저가 없습니다.`);
 			}
 
 			if (!await bcrypt.compare(password, user.password)) {
