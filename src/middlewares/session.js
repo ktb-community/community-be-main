@@ -9,20 +9,15 @@ const authenticateSession = (req, res, next) => {
 
 	// 쿠키의 만료 시간 계산 (req.session.cookie.originalMaxAge)
 	const maxAge = req.session.cookie.originalMaxAge; // 설정된 maxAge 값
-	const createdAt = req.session.cookie._expires
-		? new Date(req.session.cookie._expires).getTime() - maxAge
-		: Date.now();
-
-	// 현재 시간
-	const now = Date.now();
 
 	// 만료 여부 확인
-	if (now > createdAt + maxAge) {
+	if (Date.now() > req.session.cookie._expires.getTime() + maxAge) {
 		req.session.destroy((err) => {
 			if (err) {
 				return res.status(500).send("세션 만료 중 에러가 발생하였습니다.");
 			}
 			res.clearCookie("connect.sid"); // 세션 쿠키 삭제
+			logger.info(`${req.session.cookie.user} Session Expired`);
 			return res.status(403).send("Session expired");
 		});
 	} else {

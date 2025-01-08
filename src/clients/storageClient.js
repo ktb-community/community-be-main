@@ -9,7 +9,7 @@ class StorageClient {
 		const formData = new FormData();
 		formData.append("photo", fs.createReadStream(path), originalFilename);
 
-		const res = await axios.post(process.env.STORAGE_SERVER_URL, formData, {
+		const res = await axios.post(`${process.env.STORAGE_SERVER_URL}/storage`, formData, {
 			headers: {
 				"Content-Type": "multipart/form-data",
 			},
