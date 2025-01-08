@@ -16,7 +16,9 @@ services:
     command:
       - --config.file=/etc/prometheus/prometheus.yml
     networks:
-      - monitoring
+      - ktb-community-overlay
+    volumes:
+      - prometheus_data:/prometheus
 
   grafana:
     image: grafana/grafana:latest
@@ -31,12 +33,20 @@ services:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=admin
     networks:
-      - monitoring
+      - ktb-community-overlay
+    volumes:
+      - grafana_data:/var/lib/grafana
 
 configs:
   prometheus_config:
     file: ./prometheus.yml
 
 networks:
-  monitoring:
+  ktb-community-overlay:
     driver: overlay
+
+volumes:
+  prometheus_data:
+    driver: local
+  grafana_data:
+    driver: local
