@@ -14,4 +14,4 @@ try {
 	process.exit(1);
 }
 
-module.exports = new RedisStore({ client: redisClient, ttl: Session.TTL });
+module.exports = new RedisStore({ client: redisClient, ttl: Session.TTL / 1000 });

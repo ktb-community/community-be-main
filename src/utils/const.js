@@ -23,7 +23,7 @@ const UserRole = Object.freeze({
 });
 
 const Session = Object.freeze({
-	TTL: 60 * 60 * 24 * 3, // 3일
+	TTL: 1000 * 60 * 60 * 24 * 3, // 3일 (ms 단위)
 	SECRET_KEY: process.env.SESSION_SECRET_KEY,
 	HTTP_ONLY: true,
 	SECURE: true,

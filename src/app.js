@@ -74,11 +74,13 @@ const { Session } = require("./utils/const");
 app.use(session({
 	secret: Session.SECRET_KEY,
 	resave: false,
+	saveUninitialized: false,
 	cookie: {
 		httpOnly: Session.HTTP_ONLY,
 		secure: Session.SECURE,
 		sameSite: Session.SAME_SITE,
-		maxAge: Session.TTL,
+		expires: new Date(Date.now() + Session.TTL),
+		maxAge: Session.TTL
 	},
 	store: redisStore,
 }));
