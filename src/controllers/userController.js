@@ -33,6 +33,8 @@ class UserController {
 				if (changed) {
 					const { key } = await StorageClient.upload(file.path, file.originalname);
 					editUser.profileImg = key;
+				} else {
+					editUser.profileImg = user.profileImg;
 				}
 
 				await User.updateUser(conn, { user: editUser });

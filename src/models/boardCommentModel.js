@@ -24,7 +24,7 @@ class BoardComment {
 		return result[0] || null;
 	}
 
-	static async findBoardComments(conn, { id }) {
+	static async findBoardComments(conn, { id, limit, offset }) {
 		const query = `
 			SELECT 
 				BC.id AS commentId,
@@ -38,9 +38,10 @@ class BoardComment {
 			ON BC.writerId = U.id
 			WHERE BC.boardId = ?
 			ORDER BY BC.createdAt DESC
+			LIMIT = ? OFFSET = ?
 		`;
 
-		const [boardComments] = await conn.execute(query, [id]);
+		const [boardComments] = await conn.execute(query, [id, limit, offset]);
 		return boardComments;
 	}
 

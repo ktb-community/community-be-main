@@ -17,7 +17,7 @@ class BoardCommentController {
 				return sendJSONResponse(res, 400, ResStatus.FAIL, "유효하지 않은 요청값입니다.");
 			}
 
-			const boardComments = (await BoardComment.findBoardComments(conn, { id: boardId })).map(boardComment => ({
+			const boardComments = (await BoardComment.findBoardComments(conn, { id: boardId, limit, offset })).map(boardComment => ({
 				commentId: boardComment.commentId,
 				content: boardComment.content,
 				createdAt: StringUtil.dateTimeFormat(new Date(boardComment.createdAt)),
