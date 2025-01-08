@@ -5,6 +5,8 @@ const router = express.Router();
 
 module.exports = router;
 
-router.put(`/:userId`, upload.single("profileImg"), userController.editUserInfo)
-router.patch(`/:userId`, userController.editUserPassword)
+router.get('/:userId', userController.getUser);
 router.delete(`/:userId`, userController.deleteUser)
+router.patch(`/:userId/image`, upload.single("profileImg"), userController.editUserProfileImage)
+router.patch(`/:userId/nickname`, userController.editUserNickname)
+router.patch(`/:userId/password`, userController.editUserPassword)
