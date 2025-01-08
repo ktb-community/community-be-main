@@ -68,18 +68,18 @@ app.get("/metrics", async (req, res) => {
 // ===================================== [라우터 등록] ======================================================
 const session = require("express-session");
 const redisStore = require("./config/redis");
-const SESSION_KEY = process.env.SESSION_SECRET_KEY;
+const { SESSION } = require("./utils/const");
 
 /* 세션 미들웨어 추가 */
 app.use(session({
-	secret: SESSION_KEY,
+	secret: SESSION.SECRET_KEY,
 	resave: false,
 	saveUninitialized: false,
 	cookie: {
-		httpOnly: true,
-		secure: false,
-		sameSite: false,
-		maxAge: 1000 * 60 * 30,
+		httpOnly: SESSION.HTTP_ONLY,
+		secure: SESSION.SECURE,
+		sameSite: SESSION.SAME_SITE,
+		maxAge: SESSION.TTL,
 	},
 	store: redisStore,
 }));

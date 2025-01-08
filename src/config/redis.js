@@ -1,7 +1,8 @@
-const Redis = require('ioredis');
+const Redis = require("ioredis");
 const process = require("process");
-const { RedisStore } = require('connect-redis');
 const logger = require("./logger");
+const { RedisStore } = require("connect-redis");
+const { SESSION } = require("../utils/const");
 
 let redisClient = null;
 
@@ -13,4 +14,4 @@ try {
 	process.exit(1);
 }
 
-module.exports = new RedisStore({ client: redisClient, ttl: 60 * 30 * 1000 });
+module.exports = new RedisStore({ client: redisClient, ttl: SESSION.TTL });
