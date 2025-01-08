@@ -80,7 +80,7 @@ app.use(session({
 		httpOnly: Session.HTTP_ONLY,
 		secure: Session.SECURE,
 		sameSite: Session.SAME_SITE,
-		expires: new Date(getKst() + Session.TTL),
+		expires: new Date(getKst().getTime() + Session.TTL),
 		maxAge: Session.TTL
 	},
 	store: redisStore,
