@@ -1,11 +1,11 @@
-const logger = require("../config/logger")
+const logger = require("../config/logger");
 
 const authenticateSession = (req, res, next) => {
 	if (!req.session) {
 		return res.status(403).send("Not authorized");
 	}
 
-	logger.info(`[${req.originalUrl}] ${req.session.cookie}`);
+	logger.info(`[${req.originalUrl}] expires: ${req.session.cookie._expires} maxAge: ${req.session.cookie.originalMaxAge}`);
 
 	// 쿠키의 만료 시간 계산 (req.session.cookie.originalMaxAge)
 	const maxAge = req.session.cookie.originalMaxAge; // 설정된 maxAge 값
