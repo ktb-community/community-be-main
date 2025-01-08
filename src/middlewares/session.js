@@ -1,14 +1,20 @@
 const logger = require("../config/logger");
+const { getKst } = require("../utils/utils");
 
 const authenticateSession = (req, res, next) => {
 	if (!req.session) {
 		return res.status(403).send("Not authorized");
 	}
 
-	logger.info(`[${req.originalUrl}] expires: ${req.session.cookie._expires} maxAge: ${req.session.cookie.originalMaxAge}`);
+	logger.info(`
+		[${req.originalUrl}] 
+			currKst: ${getKst()} ${getKst().getTime()} \n
+			expires: ${req.session.cookie._expires} ${req.session.cookie._expires.getTime()} \n
+			maxAge: ${req.session.cookie.originalMaxAge} \n
+	`);
 
 	// 만료 여부 확인
-	if (Date.now() > req.session.cookie._expires.getTime()) {
+	if (getKst().getTime() > req.session.cookie._expires.getTime()) {
 		req.session.destroy((err) => {
 			if (err) {
 				return res.status(500).send("세션 만료 중 에러가 발생하였습니다.");

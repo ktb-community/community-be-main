@@ -69,6 +69,7 @@ app.get("/metrics", async (req, res) => {
 const session = require("express-session");
 const redisStore = require("./config/redis");
 const { Session } = require("./utils/const");
+const { getKst } = require("./utils/utils");
 
 /* 세션 미들웨어 추가 */
 app.use(session({
@@ -79,7 +80,7 @@ app.use(session({
 		httpOnly: Session.HTTP_ONLY,
 		secure: Session.SECURE,
 		sameSite: Session.SAME_SITE,
-		expires: new Date(Date.now() + Session.TTL),
+		expires: new Date(getKst() + Session.TTL),
 		maxAge: Session.TTL
 	},
 	store: redisStore,
