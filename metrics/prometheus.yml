@@ -5,3 +5,7 @@ scrape_configs:
   - job_name: 'ktb-community-be'
     static_configs:
       - targets: ['ktb-community-be:8000']
+
+  - job_name: 'ktb-community-storage'
+    static_configs:
+      - targets: ['ktb-community-storage:8080']

@@ -43,7 +43,7 @@ configs:
 
 networks:
   ktb-community-overlay:
-    driver: overlay
+    external: true
 
 volumes:
   prometheus_data:
