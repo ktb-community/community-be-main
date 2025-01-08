@@ -1,12 +1,10 @@
-const path = require("path");
-const fs = require("fs")
-const logger = require("../config/logger");
-const process = require("process");
-const bcrypt = require('bcrypt');
-const User = require('../models/userModel');
+const fs = require("fs");
+const bcrypt = require("bcrypt");
+const User = require("../models/userModel");
+const StorageClient = require("../clients/storageClient");
+const withTransaction = require("../middlewares/transaction");
 const RequestValidator = require("../utils/requestValidator");
 const StringUtil = require("../utils/stringUtil");
-const withTransaction = require("../middlewares/transaction");
 const { sendJSONResponse } = require("../utils/utils");
 const { ResStatus } = require("../utils/const");
 
@@ -27,30 +25,35 @@ class UserController {
 				return sendJSONResponse(res, 400, ResStatus.ERROR, "예상치 못한 에러가 발생했습니다.");
 			}
 
-			const changed = fileChange === 'true';
+			try {
+				const changed = fileChange === "true";
+				const editUser = { ...user, nickname };
 
-			// 기존 이미지 삭제
-			if (changed) {
-				const imgPath = path.join(process.cwd(), user.profileImg);
-				fs.unlink(imgPath, () => logger.info(`${imgPath} 제거`));
+				// 파일 변경이 있다면 스토리지 서버에 새 파일을 업로드
+				if (changed) {
+					const { key } = await StorageClient.upload(file.path, file.originalname);
+					editUser.profileImg = key;
+				}
+
+				await User.updateUser(conn, { user: editUser });
+
+				return sendJSONResponse(res, 200, ResStatus.SUCCESS, null, {
+					id: editUser.id,
+					email: editUser.email,
+					nickname: editUser.nickname,
+					profile: editUser.profileImg,
+					lastLoginDate: StringUtil.dateTimeFormat(new Date(editUser.lastLoginDate)),
+				});
+			} catch (err) {
+				console.error(err);
+				return sendJSONResponse(res, 400, ResStatus.FAIL, null);
+			} finally {
+				fs.rm(file.path, (err) => {
+					if (err) console.error(err);
+					console.log(`${file.path} 제거`);
+				});
 			}
-
-			const editUser = {
-				...user,
-				nickname,
-				profileImg: changed ? file.path.replace(/\\/g, '/') : user.profileImg,
-			}
-
-			await User.updateUser(conn, { user: editUser });
-
-			return sendJSONResponse(res, 200, ResStatus.SUCCESS, null, {
-				id: editUser.id,
-				email: editUser.email,
-				nickname: editUser.nickname,
-				profile: editUser.profileImg,
-				lastLoginDate: StringUtil.dateTimeFormat(new Date(editUser.lastLoginDate))
-			});
-		})
+		});
 	}
 
 	static async editUserPassword(req, res) {
@@ -75,12 +78,12 @@ class UserController {
 			const editUser = {
 				...user,
 				password: await bcrypt.hash(password, 10),
-			}
+			};
 
 			await User.updateUser(conn, { user: editUser });
 
 			return sendJSONResponse(res, 200, ResStatus.SUCCESS, null);
-		})
+		});
 	}
 
 	static async deleteUser(req, res) {
@@ -106,7 +109,7 @@ class UserController {
 			await User.deleteById(conn, { id: userId });
 
 			return sendJSONResponse(res, 200, ResStatus.SUCCESS, null);
-		})
+		});
 	}
 }
 

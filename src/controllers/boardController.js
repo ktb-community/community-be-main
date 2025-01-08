@@ -95,13 +95,13 @@ class BoardController {
 			}
 
 			try {
-				const data = await StorageClient.upload(file.path, file.originalname)
+				const { key } = await StorageClient.upload(file.path, file.originalname)
 
 				/* createdAt, modifiedAt, views은 기본값 사용 */
 				const board = {
 					title,
 					content,
-					boardImg: data.key,
+					boardImg: key,
 					writerId: userId,
 				};
 
