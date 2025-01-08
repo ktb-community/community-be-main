@@ -1,4 +1,5 @@
 const process = require("process");
+
 const ResStatus = Object.freeze({
 	FAIL: "Fail",
 	SUCCESS: "Success",
