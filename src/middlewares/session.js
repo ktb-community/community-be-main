@@ -7,11 +7,8 @@ const authenticateSession = (req, res, next) => {
 
 	logger.info(`[${req.originalUrl}] expires: ${req.session.cookie._expires} maxAge: ${req.session.cookie.originalMaxAge}`);
 
-	// 쿠키의 만료 시간 계산 (req.session.cookie.originalMaxAge)
-	const maxAge = req.session.cookie.originalMaxAge; // 설정된 maxAge 값
-
 	// 만료 여부 확인
-	if (Date.now() > req.session.cookie._expires.getTime() + maxAge) {
+	if (Date.now() > req.session.cookie._expires.getTime()) {
 		req.session.destroy((err) => {
 			if (err) {
 				return res.status(500).send("세션 만료 중 에러가 발생하였습니다.");
