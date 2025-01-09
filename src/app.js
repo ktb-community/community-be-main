@@ -10,6 +10,11 @@ const Sentry = require("@sentry/node");
 
 const app = express();
 
+if (process.env.NODE_ENV === "development") {
+	const cors = require("cors");
+	app.use(cors());
+}
+
 // CSP & 요청 최대 제한
 app.use(helmet({
 	contentSecurityPolicy: {

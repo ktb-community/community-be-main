@@ -1,17 +1,9 @@
 const logger = require("../config/logger");
-const { getKst } = require("../utils/utils");
 
 const authenticateSession = (req, res, next) => {
 	if (!req.session) {
 		return res.status(403).send("Not authorized");
 	}
-
-	logger.info(`
-		[${req.originalUrl}] 
-			currKst: ${getKst()} ${getKst().getTime()} \n
-			expires: ${req.session.cookie._expires} ${req.session.cookie._expires.getTime()} \n
-			maxAge: ${req.session.cookie.originalMaxAge} \n
-	`)
 
 	// 2. 세션 쿠키의 만료 시간 계산
 	const now = Date.now();

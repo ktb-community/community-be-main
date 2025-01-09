@@ -13,6 +13,8 @@ class BoardController {
 			const limit = parseInt(req.query.limit) || 10;
 			const offset = parseInt(req.query.offset) || 0;
 
+			console.log(`Session: ${req.session.user}`);
+
 			const boards = (await Board.findBoards(conn, { limit, offset })).map(board => ({
 				boardId: board.id,
 				title: board.title,
