@@ -7,7 +7,7 @@ const process = require("process");
 class StorageClient {
 	static async upload(path, originalFilename) {
 		const formData = new FormData();
-		formData.append("photo", fs.createReadStream(path), originalFilename);
+		formData.append("file", fs.createReadStream(path), originalFilename);
 
 		const res = await axios.post(`${process.env.STORAGE_SERVER_URL}/storage`, formData, {
 			headers: {

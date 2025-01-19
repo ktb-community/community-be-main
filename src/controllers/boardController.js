@@ -53,6 +53,7 @@ class BoardController {
 				content: boardDetail.content,
 				createdAt: StringUtil.dateTimeFormat(new Date(boardDetail.createdAt)),
 				boardImg: boardDetail.boardImg,
+				contentType: boardDetail.contentType,
 				writerId: boardDetail.writerId,
 				writerNickname: boardDetail.nickname,
 				writerProfileImg: boardDetail.profileImg || null,
@@ -86,7 +87,7 @@ class BoardController {
 	static async addBoard(req, res) {
 		return await withTransaction(async conn => {
 			const userId = parseInt(req.body.userId, 10) || null;
-			const { title, content } = req.body;
+			const { title, content, type } = req.body;
 			const file = req.file;
 
 			if (!RequestValidator.checkArguments(title, content, file, userId)) {
@@ -104,6 +105,7 @@ class BoardController {
 				const board = {
 					title,
 					content,
+					type: type.startsWith("video") ? "VIDEO" : "IMAGE",
 					boardImg: key,
 					writerId: userId,
 				};

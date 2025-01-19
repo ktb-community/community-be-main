@@ -29,6 +29,7 @@ class Board {
 				B.content,
 				B.createdAt,
 				B.boardImg,
+				B.contentType,
 				B.views,
 				U.id AS writerId,
 				U.nickname,
@@ -70,10 +71,10 @@ class Board {
 
 	static async save(conn, { board }) {
 		const query = `
-			INSERT INTO BOARD(title, content, boardImg, writerId)
-			VALUES (?, ?, ?, ?)
+			INSERT INTO BOARD(title, content, boardImg, writerId, contentType)
+			VALUES (?, ?, ?, ?, ?)
 		`;
-		await conn.execute(query, [board.title, board.content, board.boardImg, board.writerId]);
+		await conn.execute(query, [board.title, board.content, board.boardImg, board.writerId, board.type]);
 	}
 
 	static async deleteById(conn, { id }) {
