@@ -9,7 +9,7 @@ class Board {
 				U.nickname,
 				U.profileImg,
 				(SELECT COUNT(*) FROM BOARD_LIKE BL WHERE BL.boardId = B.id) AS likes,
-				(SELECT COUNT(*) FROM BOARD_COMMENT BC WHERE BC.boardId = B.id) AS comments
+				(SELECT COUNT(*) FROM BOARD_COMMENT BC WHERE BC.boardId = B.id AND NOT BC.disabled) AS comments
 			FROM BOARD AS B
 			INNER JOIN USERS AS U
 			ON B.writerId = U.id
@@ -36,7 +36,7 @@ class Board {
 				U.nickname,
 				U.profileImg,
 				(SELECT COUNT(*) FROM BOARD_LIKE BL WHERE BL.boardId = B.id) AS likes,
-				(SELECT COUNT(*) FROM BOARD_COMMENT BC WHERE BC.boardId = B.id) AS comments
+				(SELECT COUNT(*) FROM BOARD_COMMENT BC WHERE BC.boardId = B.id AND NOT BC.disabled) AS comments
 			FROM BOARD AS B
 			INNER JOIN USERS AS U
 			ON B.writerId = U.id
