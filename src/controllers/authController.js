@@ -79,15 +79,6 @@ class AuthController {
 			// lastLoginDate 업데이트
 			await User.updateLastLoginDate(conn, { id: user.id });
 
-			/* 세션에 사용자 데이터 저장 */
-			req.session.isAuthenticated = true;
-			req.session.user = {
-				id: user.id,
-				nickname: user.nickname,
-				profileImg: user.profileImg,
-				role: user.role,
-			};
-
 			return sendJSONResponse(res, 200, ResStatus.SUCCESS, "로그인이 성공적으로 완료되었습니다.", {
 				id: user.id,
 				email: user.email,
@@ -99,13 +90,7 @@ class AuthController {
 	}
 
 	static async authLogout(req, res) {
-		req.session.destroy(err => {
-			if (err) {
-				return sendJSONResponse(res, 500, ResStatus.ERROR, "로그아웃 중 오류가 발생했습니다.");
-			}
-			res.clearCookie("connect.sid"); // 클라이언트 쿠키 제거
-			return sendJSONResponse(res, 200, ResStatus.SUCCESS, "로그아웃이 성공적으로 완료되었습니다.");
-		});
+		return sendJSONResponse(res, 200, ResStatus.SUCCESS, "로그아웃이 성공적으로 완료되었습니다.");
 	}
 }
 
