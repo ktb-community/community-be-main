@@ -1,5 +1,3 @@
-const process = require("process");
-
 const ResStatus = Object.freeze({
 	FAIL: "Fail",
 	SUCCESS: "Success",
@@ -22,16 +20,7 @@ const UserRole = Object.freeze({
 	USER: "USER",
 });
 
-const Session = Object.freeze({
-	TTL: 1000 * 60, // 1000 * 60 * 60 * 24 * 3, // 3일 (ms 단위)
-	SECRET_KEY: process.env.SESSION_SECRET_KEY,
-	HTTP_ONLY: true,
-	SECURE: process.env.NODE_ENV === "production",
-	SAME_SITE: "none",
-});
-
 module.exports = {
 	ResStatus,
 	UserRole,
-	Session,
 };

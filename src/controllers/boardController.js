@@ -1,8 +1,10 @@
 const fs = require("fs");
+const FormData = require("form-data");
 const StorageClient = require("../clients/storageClient");
 const RequestValidator = require("../utils/requestValidator");
 const StringUtil = require("../utils/stringUtil");
 const Board = require("../models/boardModel");
+const User = require("../models/userModel");
 const withTransaction = require("../middlewares/transaction");
 const { sendJSONResponse } = require("../utils/utils");
 const { ResStatus } = require("../utils/const");
@@ -12,8 +14,6 @@ class BoardController {
 		return await withTransaction(async conn => {
 			const limit = parseInt(req.query.limit) || 10;
 			const offset = parseInt(req.query.offset) || 0;
-
-			console.log(`Session: ${req.session.user}`);
 
 			const boards = (await Board.findBoards(conn, { limit, offset })).map(board => ({
 				boardId: board.id,
@@ -98,8 +98,19 @@ class BoardController {
 				return sendJSONResponse(res, 400, ResStatus.FAIL, "게시글 제목 길이가 적절하지 않습니다.");
 			}
 
+			const user = await User.findById(conn, { id: userId });
+
+			if (!user) {
+				return sendJSONResponse(res, 400, ResStatus.FAIL, "존재하지 않는 유저입니다.");
+			}
+
 			try {
-				const { key } = await StorageClient.upload(file.path, file.originalname)
+				const formData = new FormData();
+				formData.append("file", fs.createReadStream(file.path), encodeURIComponent(file.originalname.replace(/ /g, '_')));
+				formData.append("nickname", user.nickname);
+				formData.append("email", user.email);
+
+				const { key } = await StorageClient.upload(formData);
 
 				/* createdAt, modifiedAt, views은 기본값 사용 */
 				const board = {
@@ -146,8 +157,19 @@ class BoardController {
 				return sendJSONResponse(res, 400, ResStatus.ERROR, "예상치 못한 에러가 발생했습니다.");
 			}
 
+			const user = await User.findById(conn, { id: userId });
+
+			if (!user) {
+				return sendJSONResponse(res, 400, ResStatus.ERROR, "예상치 못한 에러가 발생했습니다.");
+			}
+
 			try {
-				const data = await StorageClient.upload(file.path, file.originalname);
+				const formData = new FormData();
+				formData.append("file", fs.createReadStream(file.path), encodeURIComponent(file.originalname.replace(/ /g, '_')));
+				formData.append("nickname", user.nickname);
+				formData.append("email", user.email);
+
+				const data = await StorageClient.upload(formData);
 
 				// board 수정
 				const modifiedBoard = {

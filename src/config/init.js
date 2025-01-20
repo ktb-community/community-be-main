@@ -32,4 +32,3 @@ for (const dir of logDir) {
 
 /* DB 연결 테스트 */
 require("./db");
-require("./redis");

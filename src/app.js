@@ -52,9 +52,9 @@ const morganMiddleware = require("./middlewares/morgan");
 
 /* MIDDLEWARES */
 app.use(morganMiddleware);
+app.use("/uploads", express.static("uploads"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use("/uploads", express.static("uploads"));
 
 // ====================================================================================================================
 /* Prometheus */
@@ -71,35 +71,15 @@ app.get("/metrics", async (req, res) => {
 });
 
 // ===================================== [라우터 등록] ======================================================
-const session = require("express-session");
-const redisStore = require("./config/redis");
-const { Session } = require("./utils/const");
-
-/* 세션 미들웨어 추가 */
-app.use(session({
-	secret: Session.SECRET_KEY,
-	resave: false,
-	saveUninitialized: false,
-	cookie: {
-		httpOnly: Session.HTTP_ONLY,
-		secure: Session.SECURE,
-		sameSite: Session.SAME_SITE,
-		maxAge: Session.TTL,
-	},
-	store: redisStore,
-}));
-
 /* Routers */
 const authRouter = require("./routes/authRouter");
 const boardRouter = require("./routes/boardRouter");
 const userRouter = require("./routes/userRouter");
 
 /* 라우터 등록 */
-const authenticateSession = require("./middlewares/session");
-
 app.use("/api/v1/auth", authRouter);
-app.use("/api/v1/boards", authenticateSession, boardRouter);
-app.use("/api/v1/users", authenticateSession, userRouter);
+app.use("/api/v1/boards", boardRouter);
+app.use("/api/v1/users", userRouter);
 
 // ========================================= [500 에러 핸들링] ==========================================================
 // Sentry
