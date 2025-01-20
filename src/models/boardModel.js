@@ -13,6 +13,7 @@ class Board {
 			FROM BOARD AS B
 			INNER JOIN USERS AS U
 			ON B.writerId = U.id
+			WHERE NOT B.disabled
 			ORDER BY id DESC
 			LIMIT ? OFFSET ?
 		`;
@@ -78,7 +79,12 @@ class Board {
 	}
 
 	static async deleteById(conn, { id }) {
-		const query = `DELETE FROM BOARD WHERE id = ?`;
+		const query = `
+			UPDATE BOARD
+			SET disabled = TRUE
+			WHERE id = ?
+		`;
+
 		await conn.execute(query, [id]);
 	}
 }

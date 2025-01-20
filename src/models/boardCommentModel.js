@@ -36,7 +36,7 @@ class BoardComment {
 			FROM BOARD_COMMENT BC
 			INNER JOIN USERS U
 			ON BC.writerId = U.id
-			WHERE BC.boardId = ?
+			WHERE BC.boardId = ? AND NOT BC.disabled
 			ORDER BY BC.createdAt DESC
 			LIMIT ? OFFSET ?
 		`;
@@ -66,7 +66,12 @@ class BoardComment {
 	}
 
 	static async deleteById(conn, { id }) {
-		const query = `DELETE FROM BOARD_COMMENT WHERE id = ?`;
+		const query = `
+			UPDATE BOARD_COMMENT
+			SET disabled = TRUE
+			WHERE id = ?
+		`;
+
 		await conn.execute(query, [id]);
 	}
 }
