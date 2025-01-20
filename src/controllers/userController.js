@@ -1,4 +1,5 @@
 const fs = require("fs");
+const FormData = require("form-data");
 const User = require("../models/userModel");
 const StorageClient = require("../clients/storageClient");
 const withTransaction = require("../middlewares/transaction");
@@ -11,8 +12,9 @@ class UserController {
 	static async getUser(req, res) {
 		return await withTransaction(async conn => {
 			const userId = parseInt(req.params.userId, 10) || null;
+			const { id: tokenUserId } = req.decoded;
 
-			if (!RequestValidator.checkArguments(userId)) {
+			if (!RequestValidator.checkArguments(userId, tokenUserId) || userId !== tokenUserId) {
 				return sendJSONResponse(res, 400, ResStatus.FAIL, "유효하지 않은 요청입니다.");
 			}
 
@@ -26,18 +28,19 @@ class UserController {
 				id: user.id,
 				email: user.email,
 				nickname: user.nickname,
-				profile: user.profileImg,
+				profileImg: user.profileImg,
 				lastLoginDate: StringUtil.dateTimeFormat(new Date(user.lastLoginDate)),
 			});
-		})
+		});
 	}
 
 	static async editUserProfileImage(req, res) {
 		return await withTransaction(async conn => {
 			const userId = parseInt(req.params.userId, 10) || null;
 			const file = req.file;
+			const { id: tokenUserId } = req.decoded;
 
-			if (!RequestValidator.checkArguments(userId, file)) {
+			if (!RequestValidator.checkArguments(userId, file, tokenUserId) || userId !== tokenUserId) {
 				return sendJSONResponse(res, 400, ResStatus.FAIL, "유효하지 않은 요청입니다.");
 			}
 
@@ -48,8 +51,13 @@ class UserController {
 			}
 
 			try {
+				const formData = new FormData();
+				formData.append("file", fs.createReadStream(file.path), encodeURIComponent(file.originalname.replace(/ /g, "_")));
+				formData.append("nickname", user.nickname);
+				formData.append("email", user.email);
+
 				// 업로드 후 임시 파일 삭제
-				const { key } = await StorageClient.upload(file.path, file.originalname);
+				const { key } = await StorageClient.upload(formData);
 				const newUser = { ...user, profileImg: key };
 				await User.updateUser(conn, { user: newUser });
 
@@ -70,8 +78,9 @@ class UserController {
 		return await withTransaction(async conn => {
 			const userId = parseInt(req.params.userId, 10) || null;
 			const { nickname } = req.body;
+			const { id: tokenUserId } = req.decoded;
 
-			if (!RequestValidator.checkArguments(userId, nickname)) {
+			if (!RequestValidator.checkArguments(userId, nickname, tokenUserId) || userId !== tokenUserId) {
 				return sendJSONResponse(res, 400, ResStatus.FAIL, "유효하지 않은 요청입니다.");
 			}
 

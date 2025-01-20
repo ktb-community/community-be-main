@@ -17,7 +17,7 @@ class BoardComment {
 			FROM BOARD_COMMENT BC
 			INNER JOIN USERS U
 			ON BC.writerId = U.id
-			WHERE BC.id = ?
+			WHERE BC.id = ? AND NOT BC.disabled
 		`;
 
 		const [result] = await conn.execute(query, [id]);
@@ -49,7 +49,7 @@ class BoardComment {
 		const query = `
 			UPDATE BOARD_COMMENT
 			SET comment = ?
-			WHERE id = ?
+			WHERE id = ? AND NOT disabled
 		`;
 
 		await conn.execute(query, [comment, id]);

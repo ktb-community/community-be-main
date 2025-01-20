@@ -40,7 +40,7 @@ class Board {
 			FROM BOARD AS B
 			INNER JOIN USERS AS U
 			ON B.writerId = U.id
-			WHERE B.id = ?
+			WHERE B.id = ? AND NOT B.disabled
 		`;
 
 		const [boardDetail] = await conn.execute(query, [id]);
