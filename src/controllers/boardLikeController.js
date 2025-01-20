@@ -8,7 +8,7 @@ class BoardLikeController {
 	static async toggleBoardLike(req, res) {
 		return await withTransaction(async conn => {
 			const boardId = parseInt(req.params.boardId, 10) || null;
-			const userId = parseInt(req.params.userId, 10) || null;
+			const { id: userId } = req.decoded;
 
 			if (!RequestValidator.checkArguments(boardId, userId)) {
 				return sendJSONResponse(res, 400, ResStatus.FAIL, "유효하지 않은 요청입니다.");
@@ -25,7 +25,7 @@ class BoardLikeController {
 	static async checkBoardLike(req, res) {
 		return await withTransaction(async conn => {
 			const boardId = parseInt(req.params.boardId, 10) || null;
-			const userId = parseInt(req.params.userId, 10) || null;
+			const { id: userId } = req.decoded;
 
 			if (!RequestValidator.checkArguments(boardId, userId)) {
 				return sendJSONResponse(res, 400, ResStatus.FAIL, "유효하지 않은 요청입니다.");

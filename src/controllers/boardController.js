@@ -86,7 +86,7 @@ class BoardController {
 
 	static async addBoard(req, res) {
 		return await withTransaction(async conn => {
-			const userId = parseInt(req.body.userId, 10) || null;
+			const { id: userId } = req.decoded;
 			const { title, content, type } = req.body;
 			const file = req.file;
 
@@ -139,7 +139,7 @@ class BoardController {
 	static async modifyBoard(req, res) {
 		return await withTransaction(async conn => {
 			const boardId = parseInt(req.params.boardId, 10) || null;
-			const userId = parseInt(req.body.userId, 10) || null;
+			const { id: userId } = req.decoded;
 			const { title, content } = req.body;
 			const file = req.file;
 
@@ -196,8 +196,8 @@ class BoardController {
 
 	static async deleteBoard(req, res) {
 		return await withTransaction(async conn => {
+			const { id: userId } = req.decoded;
 			const boardId = parseInt(req.params.boardId, 10) || null;
-			const userId = parseInt(req.body.userId, 10) || null;
 
 			if (!RequestValidator.checkArguments(boardId, userId)) {
 				return sendJSONResponse(res, 400, ResStatus.ERROR, "유효하지 않은 요청입니다.");

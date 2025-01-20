@@ -2,6 +2,8 @@ const ResStatus = Object.freeze({
 	FAIL: "Fail",
 	SUCCESS: "Success",
 	ERROR: "Error",
+	UNAUTHORIZED: "Unauthorized",
+	FORBIDDEN: "Forbidden",
 
 	/* LOGIN */
 	EMAIL_NOT_FOUND: "Email not found",
@@ -20,7 +22,13 @@ const UserRole = Object.freeze({
 	USER: "USER",
 });
 
+const TokenExpire = Object.freeze({
+	ACCESS_TOKEN: "6h",
+	REFRESH_TOKEN: "7d"
+})
+
 module.exports = {
 	ResStatus,
 	UserRole,
+	TokenExpire
 };

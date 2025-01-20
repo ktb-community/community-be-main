@@ -35,13 +35,33 @@ class User {
 		await conn.execute(query, [user.nickname, user.profileImg, user.password, user.id]);
 	}
 
-	static async updateLastLoginDate(conn, { id }) {
-		const query = `UPDATE USERS SET lastLoginDate = ? WHERE id = ?`;
-		await conn.execute(query, [new Date(), id]);
+	static async updateRefreshToken(conn, { id, refreshToken }) {
+		const query = `
+			UPDATE USERS
+			SET refreshToken = ?
+			WHERE id = ?
+		`;
+
+		await conn.execute(query, [refreshToken, id]);
 	}
 
-	static async deleteById(conn, { id }) {
-		const query = `DELETE FROM USERS WHERE id = ?`;
+	static async updateLoginInfo(conn, { id, lastLoginDate, refreshToken }) {
+		const query = `
+			UPDATE USERS 
+			SET lastLoginDate = ?, refreshToken = ? 
+			WHERE id = ?
+		`;
+
+		await conn.execute(query, [lastLoginDate, refreshToken, id]);
+	}
+
+	static async setNullRefreshToken(conn, { id }) {
+		const query = `
+			UPDATE USERS
+			SET refreshToken = NULL
+			WHERE id = ?
+		`;
+
 		await conn.execute(query, [id]);
 	}
 }

@@ -1,12 +1,13 @@
 const express = require('express');
 const userController = require('../controllers/userController');
 const upload = require("../middlewares/multer")
+const jwtAuthenticate = require("../middlewares/jwtAuthenticate");
+
 const router = express.Router();
 
-module.exports = router;
 
-router.get('/:userId', userController.getUser);
-router.delete(`/:userId`, userController.deleteUser)
-router.patch(`/:userId/image`, upload.single("profileImg"), userController.editUserProfileImage)
-router.patch(`/:userId/nickname`, userController.editUserNickname)
-router.patch(`/:userId/password`, userController.editUserPassword)
+router.get('/:userId', jwtAuthenticate, userController.getUser);
+router.patch(`/:userId/image`, jwtAuthenticate, upload.single("profileImg"), userController.editUserProfileImage)
+router.patch(`/:userId/nickname`, jwtAuthenticate, userController.editUserNickname)
+
+module.exports = router;

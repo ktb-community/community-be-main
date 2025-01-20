@@ -35,8 +35,9 @@ class BoardCommentController {
 
 	static async addBoardComment(req, res) {
 		return await withTransaction(async conn => {
+			const { id: userId } = req.decoded;
 			const boardId = parseInt(req.params.boardId, 10) || null;
-			const { content, userId } = req.body;
+			const { content } = req.body;
 
 			if (!RequestValidator.checkArguments(boardId, content, userId)) {
 				return sendJSONResponse(res, 400, ResStatus.FAIL, "유효하지 않은 요청값입니다.");
@@ -74,9 +75,9 @@ class BoardCommentController {
 
 	static async modifyBoardComment(req, res) {
 		return await withTransaction(async conn => {
+			const { id: userId } = req.decoded;
 			const boardId = parseInt(req.params.boardId, 10) || null;
 			const commentId = parseInt(req.body.commentId, 10) || null;
-			const userId = parseInt(req.body.userId, 10) || null;
 			const comment = req.body.comment;
 
 			if (!RequestValidator.checkArguments(boardId, commentId, userId, comment)) {
@@ -102,8 +103,8 @@ class BoardCommentController {
 
 	static async deleteBoardComment(req, res) {
 		return await withTransaction(async conn => {
+			const { id: userId } = req.decoded;
 			const boardId = parseInt(req.params.boardId, 10) || null;
-			const userId = parseInt(req.body.userId, 10) || null;
 			const commentId = parseInt(req.body.commentId, 10) || null;
 
 			if (!RequestValidator.checkArguments(boardId, userId, commentId)) {
