@@ -74,7 +74,8 @@ class AuthController {
 				return sendJSONResponse(res, 400, ResStatus.EMAIL_NOT_FOUND, "가입되지 않은 계정입니다.");
 			}
 
-			if (!await bcrypt.compare(password, user.password)) {
+			// user.password가 없는 경우 -> 소셜 로그인 계정인 경우
+			if (!user.password || !await bcrypt.compare(password, user.password)) {
 				return sendJSONResponse(res, 400, ResStatus.PASSWORD_NOT_MATCH, "비밀번호가 일치하지 않습니다.");
 			}
 
