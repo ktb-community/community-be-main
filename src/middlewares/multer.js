@@ -9,7 +9,7 @@ const storage = multer.diskStorage({
 		// 회원가입이라면
 		let uploadPath = 'uploads'
 
-		if (req.path.startsWith(`/signup`)) {
+		if (req.path.startsWith(`/signup`) || req.path.startsWith(`/login`)) {
 			uploadPath = path.join(uploadPath, 'auth');
 		} else {
 			uploadPath = path.join(uploadPath, 'boards');

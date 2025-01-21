@@ -18,11 +18,27 @@ class User {
 	}
 
 	static async save(conn, { user }) {
+		const { email, password, nickname, profileImg, lastLoginDate } = user;
+
 		const query = `
 			INSERT INTO USERS(email, password, nickname, profileImg, lastLoginDate)
 			VALUES(?, ?, ?, ?, ?)
 		`;
-		await conn.execute(query, [user.email, user.password, user.nickname, user.profileImg, user.lastLoginDate]);
+
+		const [result] = await conn.execute(query, [email, password, nickname, profileImg, lastLoginDate]);
+		return result.insertId;
+	}
+
+	static async saveSocialUser(conn, { user }) {
+		const { email, emailVerified, nickname, authType, profileImg, lastLoginDate } = user;
+
+		const query = `
+			INSERT INTO USERS(email, emailVerified, nickname, authType, profileImg, lastLoginDate)
+			VALUES(?, ?, ?, ?, ?, ?)
+		`;
+
+		const [result] = await conn.execute(query, [email, emailVerified, nickname, authType, profileImg, lastLoginDate]);
+		return result.insertId;
 	}
 
 	static async updateUser(conn, { user }) {
