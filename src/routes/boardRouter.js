@@ -10,17 +10,17 @@ const boardCommentController = require('../controllers/boardCommentController');
 /* BOARD */
 router.get('/', boardController.getBoardList);
 router.post('/', jwtAuthenticate, upload.single("boardImg"), boardController.addBoard);
-router.get('/:boardId', jwtAuthenticate, boardController.getBoardDetail);
+router.get('/:boardId', boardController.getBoardDetail);
 router.put('/:boardId', jwtAuthenticate, upload.single("boardImg"), boardController.modifyBoard);
 router.delete('/:boardId', jwtAuthenticate, boardController.deleteBoard);
-router.post('/:boardId/views', jwtAuthenticate, boardController.countBoardView);
+router.post('/:boardId/views', boardController.countBoardView);
 
 /* BOARD_LIKE */
-router.get('/:boardId/likes', jwtAuthenticate, boardLikeController.checkBoardLike);
+router.get('/:boardId/likes/:userId', boardLikeController.checkBoardLike);
 router.post('/:boardId/likes', jwtAuthenticate, boardLikeController.toggleBoardLike);
 
 /* BOARD_COMMENT */
-router.get('/:boardId/comments', jwtAuthenticate, boardCommentController.getBoardComments);
+router.get('/:boardId/comments', boardCommentController.getBoardComments);
 router.post('/:boardId/comments', jwtAuthenticate, boardCommentController.addBoardComment);
 router.patch('/:boardId/comments', jwtAuthenticate, boardCommentController.modifyBoardComment);
 router.delete('/:boardId/comments', jwtAuthenticate, boardCommentController.deleteBoardComment);
